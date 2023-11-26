@@ -1,46 +1,100 @@
 import os
 
-from flask import Blueprint, render_template, redirect, url_for, flash
+import pandas as pd
+from flask import render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 
-from .forms import UploadForm
-from .utils.file_handling import list_files
-
-main = Blueprint('main', __name__)
+from app import app
 
 
-@main.route('/')
+def allowed_file(filename):
+    return (
+            "." in filename
+            and filename.rsplit(".", 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
+    )
+
+
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
-@main.route('/data-management', methods=['GET', 'POST'])
-def data_management():
-    form = UploadForm()
-    if form.validate_on_submit():
-        file = form.file.data
-        filename = secure_filename(file.filename)
-        save_path = os.path.join('data/data_raw', filename)
+@app.route("/upload", methods=["GET", "POST"])
+def upload_file():
+    if request.method == "POST":
+        if "datafile" not in request.files:
+            flash("No file part", "error")
+            return redirect(request.url)
+        file = request.files["datafile"]
+        if file.filename == "":
+            flash("No selected file", "error")
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # Change this to save in the DATA_RAW_FOLDER
+            file.save(os.path.join(app.config["DATA_RAW_FOLDER"], filename))
+            flash(
+                f'File uploaded successfully to {app.config["DATA_RAW_FOLDER"]}',
+                "success",
+            )
+            return redirect(
+                url_for("data_management")
+            )  # Or any other route you'd like to redirect to
+    return render_template("upload.html")
 
-        try:
-            file.save(save_path)
-            flash(f'File {filename} has been successfully saved.', 'success')
-        except Exception as e:
-            flash(f'An error occurred while saving the file: {e}', 'danger')
 
-        return redirect(url_for('main.data_management'))
+@app.route('/select_columns', methods=['GET', 'POST'])
+def select_columns():
+    selected_file = request.args.get('selected_file') if request.method == 'GET' else request.form.get('selected_file')
 
-    raw_files = list_files('data/data_raw')
-    saved_files = list_files('data/data_saved')
+    if not selected_file:
+        flash('No file selected', 'error')
+        return redirect(url_for('data_management'))
 
-    return render_template('data_management.html', form=form, raw_files=raw_files, saved_files=saved_files)
+    file_path = os.path.join(app.config['DATA_RAW_FOLDER'], selected_file)
+    try:
+        df = pd.read_csv(file_path)
+    except Exception as e:
+        flash(f'Error reading file: {e}', 'error')
+        return redirect(url_for('data_management'))
+
+    columns = df.columns.tolist()
+    return render_template('select_columns.html', columns=columns, selected_file=selected_file)
 
 
-@main.route('/data-modeling')
+
+
+@app.route("/data_modeling")
 def data_modeling():
-    return render_template('data_modeling.html')  # Assumes you have a template for this
+    return render_template("data_modeling.html")
 
 
-@main.route('/reporting')
-def reporting():
-    return render_template('reporting.html')  # Assumes you have a template for this
+@app.route('/data_management', methods=['GET', 'POST'])
+def data_management():
+    if request.method == 'POST':
+        selected_file = request.form.get('selected_file')
+        if selected_file:
+            return redirect(url_for('select_columns', selected_file=selected_file))
+        else:
+            flash('No file selected', 'error')
+
+    files = os.listdir(app.config['DATA_RAW_FOLDER'])
+    return render_template('data_management.html', files=files)
+
+
+@app.route('/view_file_contents', methods=['POST'])
+def view_file_contents():
+    selected_columns = request.form.getlist('columns')
+    selected_file = request.form.get('selected_file')
+    file_path = os.path.join(app.config['DATA_RAW_FOLDER'], selected_file)
+
+    try:
+        data = pd.read_csv(file_path, usecols=selected_columns)
+        total_rows = len(data)
+        data_sample = data.sample(n=10)  # Or any other logic for sampling
+    except Exception as e:
+        flash(f'Error loading file: {e}', 'error')
+        return redirect(url_for('select_columns', selected_file=selected_file))
+
+    return render_template('view_file_contents.html', data=data_sample, file_name=selected_file, total_rows=total_rows)
+
