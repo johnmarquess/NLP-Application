@@ -2,11 +2,9 @@
 
 {% block content %}
     <div class="container mt-3">
-        <h1>Worksheet: {{ worksheet_name }}</h1>
-        <p>Total number of rows: <strong>{{ total_values }}</strong></p>
+        <h1>Select Columns</h1>
         <form action="{{ url_for('process_selected_columns') }}" method="post">
             <input type="hidden" name="selected_file" value="{{ selected_file }}">
-            <input type="hidden" name="selected_worksheet" value="{{ worksheet_name }}">
 
             <table class="table">
                 <thead>
@@ -14,7 +12,7 @@
                     <th>Select</th>
                     <th>Column Name</th>
                     <th>First Item</th>
-                    <th>Missing rows</th>
+                    <th>Missing Values:Total Values</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,18 +23,12 @@
                         </td>
                         <td>{{ column.name }}</td>
                         <td>{{ column.first_item }}</td>
-                        <td>{{ column.missing }}</td>
+                        <td>{{ column.missing_ratio }}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <div class="mb-3">
-                <label for="csvFileName" class="form-label">CSV File Name (without extension)</label>
-                <input type="text" class="form-control" id="csvFileName" name="csv_file_name"
-                       placeholder="Enter file name">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Save as CSV</button>
+            <button type="submit" class="btn btn-primary">Process Selected Columns</button>
         </form>
     </div>
 {% endblock %}
