@@ -1,12 +1,12 @@
-## An NLP modeling tool with a flask front end
+# An NLP modeling tool with a flask front end
 
-### Installation
+## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Usage
+## Usage
 
 ```bash
 python app.py
