@@ -6,7 +6,7 @@
     <div class="container mt-5">
         <h2>Upload File</h2>
         <p>Please select a file to upload:</p>
-        <form action="{{ url_for('upload_file_post') }}" method="post" enctype="multipart/form-data" class="mb-3">
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="mb-3">
             <div class="input-group mb-3">
                 <input type="file" class="form-control" name="datafile" id="inputGroupFile02">
                 <button class="btn btn-primary" type="submit">Upload</button>
