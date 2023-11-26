@@ -90,9 +90,11 @@ def view_file_contents():
 
     try:
         data = pd.read_csv(file_path, usecols=selected_columns)
+        total_rows = len(data)
+        data_sample = data.sample(n=10)  # Or any other logic for sampling
     except Exception as e:
         flash(f'Error loading file: {e}', 'error')
         return redirect(url_for('select_columns', selected_file=selected_file))
 
-    return render_template('view_file_contents.html', data=data)
+    return render_template('view_file_contents.html', data=data_sample, file_name=selected_file, total_rows=total_rows)
 
