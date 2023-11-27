@@ -4,58 +4,78 @@
 
 {% block content %}
     <div class="container">
-        <div class="row">
-            <h2>Upload File</h2>
-            <form method="POST" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                <div class="row mb-3">
-                    <div class="col-md-10">
-                        <!-- File chooser -->
-                        {{ form.file(class="form-control") }}
-                        {% for error in form.file.errors %}
-                            <span class="text-danger">{{ error }}</span>
-                        {% endfor %}
-                    </div>
-                    <div class="col-md-2">
-                        <!-- Upload button -->
-                        {{ form.submit(class="btn btn-primary") }}
-                    </div>
+    <div class="row">
+        <h2>Upload File</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+            <div class="row mb-3">
+                <div class="col-md-10">
+                    <!-- File chooser -->
+                    {{ form.file(class="form-control") }}
+                    {% for error in form.file.errors %}
+                        <span class="text-danger">{{ error }}</span>
+                    {% endfor %}
                 </div>
+                <div class="col-md-2">
+                    <!-- Upload button -->
+                    {{ form.submit(class="btn btn-primary") }}
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- File lists -->
+    <div class="row">
+        <!-- data_raw files -->
+        <div class="col-md-6">
+            <h3>Raw Data Files</h3>
+            <form id="file-select-form" action="{{ url_for('select_file') }}" method="post">
+                {% for file in raw_files %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="selected_file" id="{{ file }}"
+                               value="{{ file }}" onchange="document.getElementById('file-select-form').submit();">
+                        <label class="form-check-label" for="{{ file }}">{{ file }}</label>
+                    </div>
+                {% endfor %}
+            </form>
+
+
+            {% if worksheets %}
+                <div class="mt-4">
+                    <h3>Select a Worksheet</h3>
+                    <form action="{{ url_for('select_worksheet') }}" method="post">
+                        <select class="form-select" name="selected_sheet">
+                            {% for sheet in worksheets %}
+                                <option value="{{ sheet }}">{{ sheet }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="selected_file" value="{{ selected_file }}">
+                        <button type="submit" class="btn btn-secondary mt-2">View Columns</button>
+                    </form>
+                </div>
+
+            {% endif %}
+
+
+
+        </div>
+
+        <div class="col-md-6">
+            <h3>Saved Data Files</h3>
+            <form method="post">
+                {% for file in saved_files %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="savedFile" id="{{ file }}">
+                        <label class="form-check-label" for="{{ file }}">
+                            {{ file }}
+                        </label>
+                    </div>
+                {% endfor %}
             </form>
         </div>
 
-        <!-- File lists -->
-        <div class="row">
-            <!-- data_raw files -->
-            <div class="col-md-6">
-                <h3>Raw Data Files</h3>
-                <form method="post">
-                    {% for file in raw_files %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="rawFile" id="{{ file }}">
-                            <label class="form-check-label" for="{{ file }}">
-                                {{ file }}
-                            </label>
-                        </div>
-                    {% endfor %}
-                </form>
-            </div>
 
-            <!-- data_saved files -->
-            <div class="col-md-6">
-                <h3>Saved Data Files</h3>
-                <form method="post">
-                    {% for file in saved_files %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="savedFile" id="{{ file }}">
-                            <label class="form-check-label" for="{{ file }}">
-                                {{ file }}
-                            </label>
-                        </div>
-                    {% endfor %}
-                </form>
-            </div>
-        </div>
+        <!-- data_saved files -->
 
 
     </div>
