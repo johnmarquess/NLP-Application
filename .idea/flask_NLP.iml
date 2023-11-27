@@ -7,7 +7,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/tests" isTestSource="true" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (flask_nlp)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.12 (flask_nlp)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TemplatesService">
