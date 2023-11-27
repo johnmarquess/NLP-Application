@@ -1,42 +1,29 @@
-<!-- app/templates/data_management.html -->
-
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block content %}
-    <div class="container">
-        <!-- Upload Functionality -->
-        <div class="row mb-3">
-            <div class="col">
-                <h3>Upload File</h3>
-                <form method="post" enctype="multipart/form-data" action="{{ url_for('main.data_management') }}" class="form-inline">
-                    {{ form.hidden_tag() }}
-                    <div class="mb-3">
-                        {{ form.file.label(class_="form-label") }}
-                        {{ form.file(class_="form-control") }}
-                    </div>
-                    <button type="submit" class="btn btn-primary mb-3">{{ form.submit.label }}</button>
-                </form>
-            </div>
-        </div>
+    <div class="container mt-3">
+        <h1>Data Management</h1>
 
-        <!-- File Listings -->
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Data Raw Files</h3>
-                <ul class="list-group">
-                    {% for file in raw_files %}
-                        <li class="list-group-item">{{ file }}</li>
-                    {% endfor %}
-                </ul>
+        <!-- Form for file upload -->
+        <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="datafile" class="form-label">Upload File</label>
+                <input type="file" class="form-control" id="datafile" name="datafile">
+                <button type="submit" class="btn btn-primary mt-2">Upload File</button>
             </div>
-            <div class="col-md-6">
-                <h3>Data Saved Files</h3>
-                <ul class="list-group">
-                    {% for file in saved_files %}
-                        <li class="list-group-item">{{ file }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+        </form>
+
+        <!-- Form for selecting and processing a file -->
+        <form action="{{ url_for('data_management') }}" method="post">
+            {% for file in files %}
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="selected_file" id="file{{ loop.index }}" value="{{ file }}">
+                    <label class="form-check-label" for="file{{ loop.index }}">
+                        {{ file }}
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary mt-2">Process Selected File</button>
+        </form>
     </div>
 {% endblock %}

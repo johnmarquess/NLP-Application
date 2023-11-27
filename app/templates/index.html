@@ -1,11 +1,8 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Home - Modeling App{% endblock %}
+{% block title %}Home Page{% endblock %}
 
 {% block content %}
-    <div class="py-5 text-center">
-        <h1>Modeling App</h1>
-    </div>
 
     <div class="container py-5">
         <div class="row text-center">
@@ -15,7 +12,7 @@
                 <img src="{{ url_for('static', filename='img/data_management.png') }}" alt="Data Management Image"
                      width="300">
                 <p>A range of functionality has been provided to help manage your data efficiently and easily.</p>
-                <a href="{{ url_for('main.data_management') }}" class="btn btn-primary">Manage Data</a>
+                <a href="{{ url_for('data_management') }}" class="btn btn-primary">Manage Data</a>
             </div>
             <!-- Model Building column -->
             <div class="col-md-4">
@@ -23,16 +20,19 @@
                 <img src="{{ url_for('static', filename='img/data_modeling.png') }}" alt="Data Management Image"
                      width="300">
                 <p>A range of functionality has been provided to help model your data using a range of NLP models.</p>
-                <a href="{{ url_for('main.data_modeling') }}" class="btn btn-primary">Model Data</a>
+                <a href="{{ url_for('data_modeling') }}" class="btn btn-primary">Model Data</a>
             </div>
             <!-- Statistics column -->
             <div class="col-md-4">
-                <h3>Reporting</h3>
+                <h3>Statistics</h3>
                 <img src="{{ url_for('static', filename='img/stats.png') }}" alt="Stats Image"
                      width="300">
-                <p>Reporting capabilities.</p>
+                <p>Superior statistical capabilities for making graphs from your data files.</p>
                 <a href="#" class="btn btn-primary disabled">Coming later</a>
             </div>
         </div>
     </div>
+
+
+
 {% endblock %}
