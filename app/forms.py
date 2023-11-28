@@ -12,16 +12,24 @@ class FileUploadForm(FlaskForm):
     submit = SubmitField('Upload')
 
 
+class RawFileSelectionForm(FlaskForm):
+    selected_file = RadioField('Select File', choices=[])
+
+
+class SavedFileSelectionForm(FlaskForm):
+    selected_saved_file = RadioField('Select Saved File', choices=[])
+
+
 class WorksheetSelectionForm(FlaskForm):
-    worksheet = SelectField('Select Worksheet', choices=[])
-    submit = SubmitField('View Columns')
+    selected_sheet = SelectField('Select Worksheet', choices=[])
+
 
 
 class SpacyModelForm(FlaskForm):
     model = RadioField('Model', choices=[
-        ('en-core-web-sm', 'en-core-web-sm'),
-        ('en-core-web-md', 'en-core-web-md'),
-        ('en-core-web-lg', 'en-core-web-lg'),
-        ('en-blank', 'en-blank')
+        ('en_core_web_sm', 'English - Small'),
+        ('en_core_web_md', 'English - Medium'),
+        ('en_core_web_lg', 'English - Large'),
+        ('en', 'English - Blank'),
     ])
-    submit = SubmitField('Load Model')
+    submit = SubmitField('Submit')

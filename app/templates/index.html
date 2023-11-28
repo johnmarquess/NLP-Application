@@ -7,9 +7,9 @@
 {% block content %}
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="container">
+        <div class="container mt-lg-5">
             <h1>NLP modeling tool</h1>
-            <p>This is provides functionality to load and view data files, and perform NLP modeling on text data.</p>
+            <p>This provides functionality to load and view data files, and perform NLP modeling on text data.</p>
         </div>
     </section>
 
@@ -22,7 +22,7 @@
                     <img src="{{ url_for('static', filename='img/data_management.png') }}" alt="Data Management" width="200">
                     <h3>Data Management</h3>
                     <p>Description of Data Management.</p>
-                    <a href="{{ url_for('data_management') }}" class="btn btn-primary">Learn More</a>
+                    <a href="{{ url_for('data_management') }}" class="btn btn-outline-primary">Learn More</a>
                 </div>
 
                 <!-- Data Modeling -->
@@ -30,7 +30,7 @@
                     <img src="{{ url_for('static', filename='img/data_modeling.png') }}" alt="Data Modeling" width="200">
                     <h3>Data Modeling</h3>
                     <p>Description of Data Modeling.</p>
-                    <a href="{{ url_for('data_modeling') }}" class="btn btn-primary">Learn More</a>
+                    <a href="{{ url_for('data_modeling') }}" class="btn btn-outline-primary">Learn More</a>
                 </div>
 
                 <!-- Reporting -->
@@ -38,7 +38,7 @@
                     <img src="{{ url_for('static', filename='img/reporting.png') }}" alt="Reporting" width="200">
                     <h3>Reporting</h3>
                     <p>Description of Reporting.</p>
-                    <a href="{{ url_for('reporting') }}" class="btn btn-primary">Learn More</a>
+                    <a href="{{ url_for('reporting') }}" class="btn btn-outline-primary">Learn More</a>
                 </div>
             </div>
         </div>

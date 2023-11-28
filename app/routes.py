@@ -5,7 +5,7 @@ from flask import current_app
 from flask import render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 
-from app.forms import FileUploadForm, SpacyModelForm
+from app.forms import FileUploadForm, SpacyModelForm, RawFileSelectionForm, SavedFileSelectionForm, WorksheetSelectionForm
 
 
 def get_saved_files():
@@ -21,8 +21,15 @@ def register_routes(app):
     @app.route('/data-management', methods=['GET', 'POST'])
     def data_management():
         form = FileUploadForm()
+        raw_file_form = RawFileSelectionForm()
+        saved_file_form = SavedFileSelectionForm()
+
         raw_files = os.listdir(os.path.join('app', app.config['DATA_RAW']))
         saved_files = os.listdir(os.path.join('app', app.config['DATA_SAVED']))
+
+        raw_file_form.selected_file.choices = [(file, file) for file in raw_files]
+        saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
+
         if form.validate_on_submit():
             f = form.file.data
             filename = secure_filename(f.filename)
@@ -40,19 +47,32 @@ def register_routes(app):
 
             return redirect(url_for('data_management'))
 
-        return render_template('data_management.html', form=form, raw_files=raw_files, saved_files=saved_files)
+        return render_template('data_management.html', form=form, raw_file_form=raw_file_form,
+                               saved_file_form=saved_file_form, raw_files=raw_files, saved_files=saved_files)
 
     @app.route('/select-file', methods=['POST'])
     def select_file():
-        form = FileUploadForm()  # Assuming this is your form class
-        selected_file = request.form['selected_file']
-        file_path = os.path.join('app', app.config['DATA_RAW'], selected_file)
+        form = FileUploadForm()
+        raw_file_form = RawFileSelectionForm()
+        saved_file_form = SavedFileSelectionForm()
 
-        xls = pd.ExcelFile(file_path)
-        sheets = xls.sheet_names
-        saved_files = get_saved_files()
-        return render_template('data_management.html', form=form, worksheets=sheets, saved_files=saved_files,
-                               selected_file=selected_file)
+        raw_files = os.listdir(os.path.join('app', app.config['DATA_RAW']))
+        saved_files = os.listdir(os.path.join('app', app.config['DATA_SAVED']))
+
+        raw_file_form.selected_file.choices = [(file, file) for file in raw_files]
+        saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
+
+        if raw_file_form.validate_on_submit():
+            selected_file = raw_file_form.selected_file.data
+            file_path = os.path.join('app', app.config['DATA_RAW'], selected_file)
+
+            xls = pd.ExcelFile(file_path)
+            sheets = xls.sheet_names
+
+            return render_template('data_management.html', form=form, raw_file_form=raw_file_form,
+                                   saved_file_form=saved_file_form, worksheets=sheets, selected_file=selected_file)
+
+        return redirect(url_for('data_management'))
 
     @app.route('/select-worksheet', methods=['POST'])
     def select_worksheet():
@@ -96,31 +116,47 @@ def register_routes(app):
 
         return redirect(url_for('data_management'))
 
-    @app.route('/view-saved-file', methods=['POST'])
+    @app.route('/view-saved-file', methods=['GET', 'POST'])
     def view_saved_file():
-        selected_file = request.form['selected_saved_file']
-        file_path = os.path.join('app', app.config['DATA_SAVED'], selected_file)
+        saved_file_form = SavedFileSelectionForm()
+        saved_files = os.listdir(os.path.join('app', app.config['DATA_SAVED']))
+        saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
 
-        # Read the first 5 rows of the CSV file
-        df = pd.read_csv(file_path, nrows=5)
+        # Check if there are saved files
+        if not saved_files:
+            flash('No saved files available', 'warning')
+            return render_template('view_saved_file.html', saved_file_form=saved_file_form)
 
-        # Convert the DataFrame to HTML with Bootstrap classes
-        table_html = df.to_html(classes='table table-hover table-sm left-justified-headers',
-                                index=False, header=True)
+        if saved_file_form.validate_on_submit():
+            selected_file = saved_file_form.selected_saved_file.data
+            file_path = os.path.join('app', app.config['DATA_SAVED'], selected_file)
+            # Check if a file is actually selected
+            if not selected_file:
+                flash('No file selected', 'warning')
+                return redirect(url_for('data_management'))
+            try:
+                df = pd.read_csv(file_path, nrows=5)
 
-        return render_template('saved_file_contents.html', table_html=table_html, file_name=selected_file)
+                # Convert the DataFrame to HTML with Bootstrap classes
+                table_html = df.to_html(classes='table table-hover table-sm left-justified-headers',
+                                        index=False, header=True)
+                # Render a template with the DataFrame
+                return render_template('view_saved_file.html', saved_file_form=view_saved_file, table_html=table_html,
+                                       file_name=selected_file)
+            except Exception as e:
+                flash(f'Error reading file: {e}', 'danger')
 
-
+        return render_template('view_saved_file.html', saved_file_form=saved_file_form)
 
     @app.route('/data-modeling', methods=['GET', 'POST'])
     def data_modeling():
         spacy_model_form = SpacyModelForm()
 
         if spacy_model_form.validate_on_submit():
-            # Logic to load the selected spaCy model
             selected_model = spacy_model_form.model.data
-            # Process the model loading here
-            return redirect(url_for('data_modeling'))  # Redirect as needed
+            flash(f'Model selected: {selected_model}', 'info')
+            # Additional logic to load the selected spaCy model can be added here
+            # ...
 
         return render_template('data_modeling.html', spacy_model_form=spacy_model_form)
 
