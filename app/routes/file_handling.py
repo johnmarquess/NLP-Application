@@ -3,22 +3,14 @@ import os
 import pandas as pd
 from flask import Blueprint, current_app, render_template, redirect, url_for, request, flash
 
-from app.forms import FileUploadForm, RawFileSelectionForm, SavedFileSelectionForm
+from app.utils import prepare_file_management_forms
 
 file_handling_bp = Blueprint('file_handling', __name__)
 
 
 @file_handling_bp.route('/select-file', methods=['GET', 'POST'])
 def select_file():
-    form = FileUploadForm()
-    raw_file_form = RawFileSelectionForm()
-    saved_file_form = SavedFileSelectionForm()
-
-    raw_files = os.listdir(os.path.join('app', current_app.config['DATA_RAW']))
-    saved_files = os.listdir(os.path.join('app', current_app.config['DATA_SAVED']))
-
-    raw_file_form.selected_file.choices = [(file, file) for file in raw_files]
-    saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
+    form, raw_file_form, saved_file_form, raw_files, saved_files = prepare_file_management_forms()
 
     if raw_file_form.validate_on_submit():
         selected_file = raw_file_form.selected_file.data

@@ -5,22 +5,13 @@ from flask import Blueprint, render_template, current_app, flash, redirect, url_
 from werkzeug.utils import secure_filename
 
 from app.forms import FileUploadForm, RawFileSelectionForm, SavedFileSelectionForm
-from app.utils import get_saved_files
-
+from app.utils import get_saved_files, prepare_file_management_forms
 data_management_bp = Blueprint('data_management', __name__)
 
 
 @data_management_bp.route('/data-management')
 def data_management():
-    form = FileUploadForm()
-    raw_file_form = RawFileSelectionForm()
-    saved_file_form = SavedFileSelectionForm()
-
-    raw_files = os.listdir(os.path.join('app', current_app.config['DATA_RAW']))
-    saved_files = os.listdir(os.path.join('app', current_app.config['DATA_SAVED']))
-
-    raw_file_form.selected_file.choices = [(file, file) for file in raw_files]
-    saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
+    form, raw_file_form, saved_file_form, raw_files, saved_files = prepare_file_management_forms()
 
     if form.validate_on_submit():
         f = form.file.data
@@ -45,6 +36,24 @@ def data_management():
 
 @data_management_bp.route('/select-worksheet', methods=['POST'])
 def select_worksheet():
+    """
+    Select Worksheet
+
+    This method is used to select a worksheet from an uploaded Excel file.
+
+    Example usage:
+    select_worksheet()
+
+    :param None: No parameters are required.
+
+    :return: The method returns the rendered template 'worksheet_display.html'. The template contains the following data:
+        - column_info: A list of tuples representing the columns in the selected worksheet. Each tuple contains the column name,
+          the value of the first cell in the column (or None if the column is empty), and the number of empty cells in the column.
+        - saved_files: A list of names of saved files.
+        - selected_file: The name of the selected file.
+        - selected_sheet: The name of the selected worksheet.
+        - total_rows: The total number of rows in the selected worksheet.
+    """
     form = FileUploadForm()
     selected_file = request.form['selected_file']
     selected_sheet = request.form['selected_sheet']
