@@ -33,7 +33,7 @@
             <h3>Raw Data Files</h3>
             <p>These are the files that have been uploaded to the <code>data/data_raw/</code> folder. Select one to
                 view the columns and data.</p>
-            <form method="POST" action="{{ url_for('select_file') }}">
+            <form method="POST" action="{{ url_for('file_handling.select_file') }}">
                 {{ raw_file_form.hidden_tag() }}
                 {% for file in raw_file_form.selected_file %}
                     <div class="form-check">
@@ -49,7 +49,7 @@
                 <div class="mt-4">
                     <h3>Select a Worksheet</h3>
                     <p>These are the worksheets in the selected file. Select one to view the columns and data.</p>
-                    <form action="{{ url_for('select_worksheet') }}" method="post">
+                    <form action="{{ url_for('data_management.select_worksheet') }}" method="post">
                         <label>
                             <select class="form-select" name="selected_sheet">
                                 {% for sheet in worksheets %}
@@ -69,7 +69,7 @@
 
         <div class="col-md-6">
             <h3>CSV files for processing</h3>
-            <form method="POST" action="{{ url_for('view_saved_file') }}">
+            <form method="POST" action="{{ url_for('data_management.view_saved_file') }}">
                 {{ saved_file_form.hidden_tag() }}
                 {% for file in saved_file_form.selected_saved_file %}
                     <div class="form-check">

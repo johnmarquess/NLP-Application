@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\app\data\data_saved\cheesels.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\app\data\data_saved\dedications.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
