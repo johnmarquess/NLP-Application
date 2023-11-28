@@ -1,9 +1,43 @@
 {% extends 'base.html' %}
 
-{% block title %}Home Page{% endblock %}
-
 {% block content %}
-    <h1>Data modeling</h1>
+    <div class="container">
+        <h2>Data Modeling</h2>
+        <div class="row">
+            <!-- Load a spaCy Model -->
+            <div class="col-md-6">
+                <h3>Load a spaCy Model</h3>
+                <form method="post">
+                    {{ spacy_model_form.csrf_token }}
+                    {% for model in spacy_model_form.model %}
+                        <div class="form-check">
+                            {{ model }}
+                            {{ model.label }}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary">Load Model</button>
+                </form>
+            </div>
 
-    <!-- More content specific to the index page goes here -->
+            <!-- Preprocess Data -->
+            <div class="col-md-6">
+                <h3>Preprocess Data</h3>
+                <!-- Placeholder for preprocessing data form -->
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Run a Model -->
+            <div class="col-md-6">
+                <h3>Run a Model</h3>
+                <!-- Placeholder for running a model form -->
+            </div>
+
+            <!-- View Model Outputs -->
+            <div class="col-md-6">
+                <h3>View Model Outputs</h3>
+                <!-- Placeholder for model outputs -->
+            </div>
+        </div>
+    </div>
 {% endblock %}

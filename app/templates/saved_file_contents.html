@@ -1,0 +1,10 @@
+<!-- saved_file_contents.html -->
+
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h3>Contents of {{ file_name }}</h3>
+        {{ table_html|safe }}
+    </div>
+{% endblock %}

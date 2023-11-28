@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="container">
-        <h3>Worksheet Info</h3>
+
         <!-- Display worksheet metadata and columns here -->
         {% if column_info %}
             <div class="mt-4">
@@ -32,6 +32,8 @@
                             </tr>
                         {% endfor %}
                     </table>
+                    <p>Save selected columns as CSV file. The csv file will be saved to <code>data/data_saved.</code></p>
+                    <p>A file extension is not required.</p>
                     <input type="text" name="csv_name" placeholder="Enter CSV file name">
                     <button type="submit" class="btn btn-primary">Save as CSV</button>
                 </form>

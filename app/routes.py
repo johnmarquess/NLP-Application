@@ -5,7 +5,7 @@ from flask import current_app
 from flask import render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 
-from app.forms import FileUploadForm
+from app.forms import FileUploadForm, SpacyModelForm
 
 
 def get_saved_files():
@@ -96,9 +96,33 @@ def register_routes(app):
 
         return redirect(url_for('data_management'))
 
-    @app.route('/data-modeling')
+    @app.route('/view-saved-file', methods=['POST'])
+    def view_saved_file():
+        selected_file = request.form['selected_saved_file']
+        file_path = os.path.join('app', app.config['DATA_SAVED'], selected_file)
+
+        # Read the first 5 rows of the CSV file
+        df = pd.read_csv(file_path, nrows=5)
+
+        # Convert the DataFrame to HTML with Bootstrap classes
+        table_html = df.to_html(classes='table table-hover table-sm left-justified-headers',
+                                index=False, header=True)
+
+        return render_template('saved_file_contents.html', table_html=table_html, file_name=selected_file)
+
+
+
+    @app.route('/data-modeling', methods=['GET', 'POST'])
     def data_modeling():
-        return render_template('data_modeling.html')
+        spacy_model_form = SpacyModelForm()
+
+        if spacy_model_form.validate_on_submit():
+            # Logic to load the selected spaCy model
+            selected_model = spacy_model_form.model.data
+            # Process the model loading here
+            return redirect(url_for('data_modeling'))  # Redirect as needed
+
+        return render_template('data_modeling.html', spacy_model_form=spacy_model_form)
 
     @app.route('/reporting')
     def reporting():
