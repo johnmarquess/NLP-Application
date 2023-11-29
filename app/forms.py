@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import SubmitField, RadioField, SelectField
+from wtforms import RadioField, SelectField, SubmitField, HiddenField
 from wtforms.validators import DataRequired
 
 
@@ -21,8 +21,9 @@ class SavedFileSelectionForm(FlaskForm):
 
 
 class WorksheetSelectionForm(FlaskForm):
-    selected_sheet = SelectField('Select Worksheet', choices=[])
-
+    selected_worksheet = SelectField('Select Worksheet', choices=[])
+    selected_file = HiddenField()  # Hidden field to store selected file name
+    submit = SubmitField('View Columns')
 
 
 class SpacyModelForm(FlaskForm):

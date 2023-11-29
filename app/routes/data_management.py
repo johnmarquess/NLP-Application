@@ -9,9 +9,17 @@ from app.utils import get_saved_files, prepare_file_management_forms
 data_management_bp = Blueprint('data_management', __name__)
 
 
-@data_management_bp.route('/data-management')
+@data_management_bp.route('/data-management', methods=['GET', 'POST'])
 def data_management():
-    form, raw_file_form, saved_file_form, raw_files, saved_files = prepare_file_management_forms()
+    form = FileUploadForm()
+    raw_file_form = RawFileSelectionForm()
+    saved_file_form = SavedFileSelectionForm()
+
+    raw_files = os.listdir(os.path.join('app', current_app.config['DATA_RAW']))
+    saved_files = os.listdir(os.path.join('app', current_app.config['DATA_SAVED']))
+
+    raw_file_form.selected_file.choices = [(file, file) for file in raw_files]
+    saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
 
     if form.validate_on_submit():
         f = form.file.data
