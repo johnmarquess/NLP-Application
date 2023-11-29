@@ -13,6 +13,8 @@ Blueprints, Flask-WTF for form handling, and Pandas for data processing.
 - __Machine Learning Integration__: Load and configure NLP models from libraries like spaCy.
 - __Responsive User Interface__: Built with Bootstrap 5 for a modern, responsive design.
 
+### Machine Learning and Reporting are not implemented yet!: ###
+
 ## Installation: ##
 
 To set up the project locally, follow these steps:
