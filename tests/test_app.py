@@ -1,6 +1,7 @@
 import io
 import os
 
+import pandas as pd
 import pytest
 
 from app import create_app
@@ -55,11 +56,11 @@ def test_worksheet_selection(client):
     assert test_sheet_name.encode() in response.data  # Check if the response contains the sheet name
 
 
-def test_save_csv(client,app):
-    with app.app_context():        # Set up test data
+def test_save_csv(client, app):
+    with app.app_context():  # Set up test data
         test_file_name = 'test_file.xlsx'
         test_sheet_name = 'Sheet1'
-        test_csv_name = 'test_file.csv'
+        test_csv_name = 'test_file'
         test_columns = ['col1', 'col2']
 
         # Prepare the data for POST request
@@ -87,5 +88,4 @@ def test_save_csv(client,app):
             assert 'col1' in content
             assert 'col2' in content
             assert 'col3' not in content
-
 
