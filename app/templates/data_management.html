@@ -42,25 +42,28 @@
                     </div>
                 {% endfor %}
                 <button type="submit" class="btn btn-outline-primary btn-sm">Select File</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteFile('raw')">Delete File</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteFile('raw')">Delete File
+                </button>
             </form>
 
 
             {% if worksheets %}
-                <div class="mt-4">
+                <div class="mt-lg-3">
                     <h3>Select a Worksheet</h3>
                     <p>These are the worksheets in the selected file. Select one to view the columns and data.</p>
+
                     <form action="{{ url_for('data_management.select_worksheet') }}" method="post">
                         <label>
-                            <select class="form-select" name="selected_sheet">
+                            <select class="form-select form-select-sm" name="selected_sheet">
                                 {% for sheet in worksheets %}
                                     <option value="{{ sheet }}">{{ sheet }}</option>
                                 {% endfor %}
                             </select>
                         </label>
                         <input type="hidden" name="selected_file" value="{{ selected_file }}">
-                        <button type="submit" class="btn btn-primary mt-2">View Columns</button>
+                        <button type="submit" class="btn btn-outline-primary btn-sm mb-1 ">View Columns</button>
                     </form>
+
                 </div>
 
             {% endif %}
@@ -79,7 +82,9 @@
                     </div>
                 {% endfor %}
                 <button type="submit" class="btn btn-outline-primary btn-sm">Select File</button>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteFile('saved')">Delete Selected File</button>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteFile('saved')">Delete
+                    Selected File
+                </button>
             </form>
 
 

@@ -1,4 +1,7 @@
 ### User added
+*.xls
+*.xlsx
+*.csv
 
 ### Flask template
 instance/*
