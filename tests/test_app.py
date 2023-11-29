@@ -1,7 +1,6 @@
 import io
 import os
 
-import pandas as pd
 import pytest
 
 from app import create_app
