@@ -1,4 +1,4 @@
-# Flask NLP Application #
+# NLP Application #
 
 ## Description: ##
 
