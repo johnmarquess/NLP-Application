@@ -1,15 +1,14 @@
 from flask import Flask
 
-from .routes.file_handling import file_handling_bp
+from app.config import Config
 from .routes.data_management import data_management_bp
 from .routes.data_modeling import data_modeling_bp
-from .routes.reporting import reporting_bp
+from .routes.file_handling import file_handling_bp
 from .routes.main import main_bp
+from .routes.reporting import reporting_bp
 
-from config import Config
 
-
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(Config)
 
