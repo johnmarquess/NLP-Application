@@ -21,7 +21,7 @@ To set up the project locally, follow these steps:
 
 ```bash
 git clone https://github.com/johnmarquess/flask_NLP.git
-cd flask_NLP
+cd NLP-Application
 ```
 
 2. __Create a Virtual Environment (Optional):__
