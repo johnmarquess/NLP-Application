@@ -5,10 +5,23 @@
 {% block content %}
     <div class="container mt-lg-5">
     <div class="row">
-        <h3>Upload File</h3>
-        <p>You can upload a spreadsheet file from here. It will allow you to search for a file on your computer which
-            will be saved to the <code>data/data_raw/</code> folder</p>
-        <form method="POST" enctype="multipart/form-data">
+        <h3>Upload a spreadsheet file.</h3>
+
+        <ul class="list-group ">
+            <li class="list-group-item disabled">You can upload a spreadsheet file from here. It will allow you to
+                search for a file on your computer which will be saved to the <code>data/data_raw/</code> folder.
+            </li>
+            <li class="list-group-item disabled">Only <code>.xlsx</code> or <code>.xls</code> files can be uploaded.
+            </li>
+            <li class="list-group-item disabled mb-lg-4">Also, please remember people can do stupid things with spreadsheets. It
+                is good practice review for merged header rows or banner images before you upload.
+            </li>
+
+
+        </ul>
+
+
+        <form class="mb-lg-5" method="POST" enctype="multipart/form-data">
             {{ form.hidden_tag() }}
             <div class="row mb-3">
                 <div class="col-md-6">

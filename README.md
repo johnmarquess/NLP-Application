@@ -39,6 +39,7 @@ venv\Scripts\activate  # For Windows
 ```bash
 pip install -r requirements.txt
 ```
+Another dependency is that  you need to have the correct spaCy models downloaded and installed. For example ` python -m spacy download en_core_web_sm` to download and install the small English web core model. More information at the [spaCy website](https://spacy.io/usage/models).   
 
 4. Run the Application:
 
@@ -76,6 +77,13 @@ After starting the application, navigate to http://localhost:5000 in your web br
 
 __Config File:__ Edit config.py to change configuration settings like secret keys and folder paths.
 __Security:__ The application includes measures for secure file handling.
+
+## Testing ##
+To run the (meagre amount of) tests, use the following command:
+
+```bash
+pytest
+```
 
 ## Contributing ##
 
