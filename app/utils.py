@@ -22,3 +22,13 @@ def prepare_file_management_forms():
     saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
 
     return form, raw_file_form, saved_file_form, raw_files, saved_files
+
+
+def get_file_path(filename):
+    """
+    Construct the full file path for a given filename stored in the DATA_SAVED directory.
+
+    :param filename: The name of the file.
+    :return: Full path to the file.
+    """
+    return os.path.join(current_app.root_path, current_app.config['DATA_SAVED'], filename)

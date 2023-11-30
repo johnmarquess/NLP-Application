@@ -7,6 +7,7 @@
             <!-- Load a spaCy Model -->
             <div class="col-md-6">
                 <h3>Load a spaCy Model</h3>
+                <p> You need to have downloaded spaCy models first</p>
                 <form method="post">
                     {{ spacy_model_form.csrf_token }}
                     {% for model in spacy_model_form.model %}
@@ -23,7 +24,34 @@
             <!-- Preprocess Data -->
             <div class="col-md-6">
                 <h3>Preprocess Data</h3>
-                <!-- Placeholder for preprocessing data form -->
+
+                <form method="POST">
+
+                    {{ preprocessing_form.hidden_tag() }}
+                    <div class="form-group">
+                        <div>
+                            {{ preprocessing_form.file.label }} {{ preprocessing_form.file(id='file-select') }}
+                        </div>
+                        <div>
+                            {{ preprocessing_form.column_to_preprocess.label }}
+                            <select id="column-select" name="column_to_preprocess">
+                                <!-- This will be populated by JavaScript -->
+                            </select>
+                        </div>
+
+                        <!-- Display checkboxes for preprocessing options -->
+                        <div>{{ preprocessing_form.lemmatize }} Lemmatize</div>
+                        <div>{{ preprocessing_form.remove_stopwords }} Remove English Stop Words</div>
+                        <div>{{ preprocessing_form.remove_punctuation }} Remove Punctuation</div>
+                        <div>{{ preprocessing_form.remove_spaces }} Remove Spaces</div>
+                        <!-- Field for renaming the data column -->
+
+                        <!-- Options for storing the preprocessed data -->
+                        <div>{{ preprocessing_form.store_as.label }} {{ preprocessing_form.store_as }}</div>
+                        <div>{{ preprocessing_form.submit }}</div>
+                    </div>
+                </form>
+
             </div>
         </div>
 
@@ -38,7 +66,44 @@
             <div class="col-md-6">
                 <h3>View Model Outputs</h3>
                 <!-- Placeholder for model outputs -->
+                {% if processed_data_head %}
+                    <h3>Processed Data Preview</h3>
+                    <div>
+                        {{ processed_data_head|safe }}  <!-- 'safe' filter to render HTML -->
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
+
+
+    <script type="text/javascript">
+        document.getElementById('file-select').addEventListener('change', function () {
+            const fileName = this.value;
+            fetch(`/get-columns?file=${encodeURIComponent(fileName)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.columns) {
+                        updateColumnDropdown(data.columns);
+                    }
+                });
+        });
+
+        function updateColumnDropdown(columns) {
+            const columnSelect = document.getElementById('column-select');
+            columnSelect.innerHTML = ''; // Clear existing options
+            columns.forEach(column => {
+                const option = document.createElement('option');
+                option.value = column;
+                option.textContent = column;
+                columnSelect.appendChild(option);
+            });
+        }
+
+
+    </script>
+
+
+
+
 {% endblock %}
