@@ -10,7 +10,7 @@ from .routes.reporting import reporting_bp
 
 def create_app():
 
-    env = os.getenv('FLASK_ENV', 'production')
+    env = os.getenv('FLASK_ENV', 'development')
     if env == 'development':
         config_class = DevelopmentConfig
     elif env == 'testing':

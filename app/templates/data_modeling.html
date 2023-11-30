@@ -31,10 +31,10 @@
                     <div class="form-group">
                         <div class="mb-3">
                             {{ preprocessing_form.file.label(class="form-label") }}
-                            {{ preprocessing_form.file(id='file-select', class = "form-select") }}
+                            {{ preprocessing_form.file(id='file-select', class="form-select") }}
                         </div>
                         <div>
-                            {{ preprocessing_form.column_to_preprocess.label(class="form-label")  }}
+                            {{ preprocessing_form.column_to_preprocess.label(class="form-label") }}
                             <select id="column-select" name="column_to_preprocess" class="form-select">
                                 <!-- This will be populated by JavaScript -->
                             </select>
@@ -42,8 +42,11 @@
 
                         <!-- Display checkboxes for preprocessing options -->
                         <div>{{ preprocessing_form.lemmatize(class="form-check-input") }} Lemmatize</div>
-                        <div>{{ preprocessing_form.remove_stopwords(class="form-check-input") }} Remove English Stop Words</div>
-                        <div>{{ preprocessing_form.remove_punctuation(class="form-check-input") }} Remove Punctuation</div>
+                        <div>{{ preprocessing_form.remove_stopwords(class="form-check-input") }} Remove English Stop
+                            Words
+                        </div>
+                        <div>{{ preprocessing_form.remove_punctuation(class="form-check-input") }} Remove Punctuation
+                        </div>
                         <div>{{ preprocessing_form.remove_spaces(class="form-check-input") }} Remove Spaces</div>
                         <!-- Field for renaming the data column -->
 

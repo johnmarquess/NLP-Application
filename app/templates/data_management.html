@@ -50,8 +50,8 @@
                 {{ raw_file_form.hidden_tag() }}
                 {% for file in raw_file_form.selected_file %}
                     <div class="form-check">
-                        {{ file }}
-                        {{ file.label }}
+                        {{ file(class="form-check-input") }}
+                        {{ file.label(class="form-check-label") }}
                     </div>
                 {% endfor %}
                 <button type="submit" class="btn btn-outline-primary btn-sm">Select File</button>
