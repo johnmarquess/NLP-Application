@@ -29,26 +29,29 @@
 
                     {{ preprocessing_form.hidden_tag() }}
                     <div class="form-group">
-                        <div>
-                            {{ preprocessing_form.file.label }} {{ preprocessing_form.file(id='file-select') }}
+                        <div class="mb-3">
+                            {{ preprocessing_form.file.label(class="form-label") }}
+                            {{ preprocessing_form.file(id='file-select', class = "form-select") }}
                         </div>
                         <div>
-                            {{ preprocessing_form.column_to_preprocess.label }}
-                            <select id="column-select" name="column_to_preprocess">
+                            {{ preprocessing_form.column_to_preprocess.label(class="form-label")  }}
+                            <select id="column-select" name="column_to_preprocess" class="form-select">
                                 <!-- This will be populated by JavaScript -->
                             </select>
                         </div>
 
                         <!-- Display checkboxes for preprocessing options -->
-                        <div>{{ preprocessing_form.lemmatize }} Lemmatize</div>
-                        <div>{{ preprocessing_form.remove_stopwords }} Remove English Stop Words</div>
-                        <div>{{ preprocessing_form.remove_punctuation }} Remove Punctuation</div>
-                        <div>{{ preprocessing_form.remove_spaces }} Remove Spaces</div>
+                        <div>{{ preprocessing_form.lemmatize(class="form-check-input") }} Lemmatize</div>
+                        <div>{{ preprocessing_form.remove_stopwords(class="form-check-input") }} Remove English Stop Words</div>
+                        <div>{{ preprocessing_form.remove_punctuation(class="form-check-input") }} Remove Punctuation</div>
+                        <div>{{ preprocessing_form.remove_spaces(class="form-check-input") }} Remove Spaces</div>
                         <!-- Field for renaming the data column -->
 
                         <!-- Options for storing the preprocessed data -->
-                        <div>{{ preprocessing_form.store_as.label }} {{ preprocessing_form.store_as }}</div>
-                        <div>{{ preprocessing_form.submit }}</div>
+                        <div>{{ preprocessing_form.store_as.label(class="form-label") }}
+                            {{ preprocessing_form.store_as(class = "form-select") }}
+                        </div>
+                        <div>{{ preprocessing_form.submit(class="btn btn-outline-primary btn-sm)") }}</div>
                     </div>
                 </form>
 

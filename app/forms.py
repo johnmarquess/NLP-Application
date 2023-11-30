@@ -42,7 +42,7 @@ class SpacyModelForm(FlaskForm):
 
 class PreprocessingForm(FlaskForm):
     # Dropdown for selecting the file
-    file = SelectField('Select a CSV File', validators=[DataRequired()])
+    file = SelectField('Select a CSV File',  validators=[DataRequired()])
     # Checkbox fields for preprocessing options
     lemmatize = BooleanField('Lemmatize')
     remove_stopwords = BooleanField('Remove English Stop Words')
