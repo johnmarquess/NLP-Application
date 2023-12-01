@@ -31,13 +31,12 @@ class WorksheetSelectionForm(FlaskForm):
 
 
 class SpacyModelForm(FlaskForm):
-    model = RadioField('Model', choices=[
+    model = SelectField('Model', choices=[
         ('en_core_web_sm', 'English - Small'),
         ('en_core_web_md', 'English - Medium'),
         ('en_core_web_lg', 'English - Large'),
-        ('en', 'English - Blank'),
-    ])
-    submit = SubmitField('Submit')
+        ('en', 'English - Blank')
+    ], render_kw={"id": "model-select"})
 
 
 class PreprocessingForm(FlaskForm):

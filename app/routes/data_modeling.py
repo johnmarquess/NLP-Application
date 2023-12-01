@@ -15,10 +15,20 @@ def load_spacy_model_from_session():
     model_choice = session.get('selected_model')
     if model_choice:
         try:
-            nlp = spacy.load(model_choice)
+            # Check if the model choice is one of the English models
+            if model_choice in ['en_core_web_sm', 'en_core_web_md', 'en_core_web_lg']:
+                nlp = spacy.load(model_choice)
+            elif model_choice == 'en':
+                # Load a blank English model
+                nlp = spacy.blank('en')
+            else:
+                flash(f"Invalid model choice: {model_choice}", 'danger')
+                return None
+
             return nlp
         except Exception as e:
             flash(f"Failed to load model {model_choice}: {str(e)}", 'danger')
+
     return None
 
 
@@ -72,6 +82,7 @@ def data_modeling():
     spacy_model_form = SpacyModelForm()
     preprocessing_form = PreprocessingForm()
     processed_data_head = None
+    summary = {}
 
     # Handle spaCy model form submission
     if spacy_model_form.validate_on_submit():
@@ -79,7 +90,7 @@ def data_modeling():
         session['selected_model'] = model_choice
         flash(f'Model {model_choice} loaded successfully!', 'success')
 
-    # Populate column choices when a file is selected
+        # Populate column choices when a file is selected
     if preprocessing_form.file.data:
         file_path = get_file_path(preprocessing_form.file.data)
         preprocessing_form.populate_column_choices(file_path)
@@ -90,6 +101,9 @@ def data_modeling():
         if nlp:
             file_path = get_file_path(preprocessing_form.file.data)
             df = pd.read_csv(file_path)
+            summary['Model'] = nlp.meta['name']  # Add model name to summary
+            summary['Processed File'] = preprocessing_form.file.data  # Add file to summary
+            summary['Selected Column'] = preprocessing_form.column_to_preprocess.data  # Add column to summary
 
             # Get the selected column
             selected_column = preprocessing_form.column_to_preprocess.data
@@ -110,6 +124,15 @@ def data_modeling():
             processed_data_head = df.head().to_html(classes='table table-striped', header=True,
                                                     index=False)
 
+            processed_data_head = df.head().to_html(classes='table table-striped', header=True, index=False)
+            summary['Number of Rows'] = df.shape[0]  # Add number of rows to summary
+            summary['Preprocessing Options'] = ', '.join(
+                opt for opt in
+                ['lemmatize', 'lowercase', 'remove_stopwords', 'remove_punctuation', 'remove_special_chars',
+                 'remove_spaces', 'remove_newlines', ]
+                if preprocessing_form[opt].data
+            )
+
             if preprocessing_form.output_filename.data:
                 output_file = preprocessing_form.output_filename.data
                 # Append '.csv' if not already present
@@ -129,4 +152,5 @@ def data_modeling():
                         flash(f"Failed to save file: {e}", "error")
 
     return render_template('data_modeling.html', spacy_model_form=spacy_model_form,
-                           preprocessing_form=preprocessing_form, processed_data_head=processed_data_head)
+                           preprocessing_form=preprocessing_form, processed_data_head=processed_data_head,
+                           summary=summary)
