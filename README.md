@@ -73,6 +73,9 @@ After starting the application, navigate to http://localhost:5000 in your web br
   and save the selection as a new .csv file.
 - __Model Integration:__ In the Data Modeling section, choose and configure NLP models for analysis.
 
+There is a test data file in the `data/data_raw` folder that contains some Amazon reviews that I found on [Kaggle](https://www.kaggle.com/datafiniti/consumer-reviews-of-amazon-products).) 
+
+
 ## Configuration ##
 
 __Config File:__ Edit config.py to change configuration settings like secret keys and folder paths.
