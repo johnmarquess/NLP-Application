@@ -42,7 +42,7 @@ class SpacyModelForm(FlaskForm):
 
 class PreprocessingForm(FlaskForm):
     # Dropdown for selecting the file
-    file = SelectField('Select a CSV File',  validators=[DataRequired()])
+    file = SelectField(label='Select a CSV file from your list of saved files.', validators=[DataRequired()])
     # Checkbox fields for preprocessing options
     lemmatize = BooleanField('Lemmatize')
     remove_stopwords = BooleanField('Remove English Stop Words')
@@ -52,7 +52,7 @@ class PreprocessingForm(FlaskForm):
     remove_newlines = BooleanField('Remove Newline Characters')
     lowercase = BooleanField('Make Lowercase')
     # # Field for renaming the data column
-    column_to_preprocess = SelectField('Select Column to Preprocess', choices=[], validators=[DataRequired()])
+    column_to_preprocess = SelectField('Select column to preprocess', choices=[], validators=[DataRequired()])
     # Options for storing the preprocessed data
     store_as = SelectField('Store As', choices=[('string', 'String'), ('tokens', 'List of Tokens')])
     submit = SubmitField('Process')

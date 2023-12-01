@@ -40,7 +40,7 @@
                             </select>
                         </div>
                         <div class="row mt-lg-2">
-                            <p>Select which  preprocessing functions you would like to perform</p>
+                            <p>Select which preprocessing functions you would like to perform</p>
                             <div class="col-md-6">
                                 <!-- Display checkboxes for preprocessing options -->
                                 <div>{{ preprocessing_form.lemmatize(class="form-check-input") }} Lemmatize</div>
@@ -68,36 +68,38 @@
 
                         </div>
                         <!-- Options for storing the preprocessed data -->
-                        <div>{{ preprocessing_form.store_as.label(class="form-label") }}
-                            {{ preprocessing_form.store_as(class = "form-select") }}
-                        </div>
-                        <div>{{ preprocessing_form.submit(class="btn btn-outline-primary btn-sm)") }}</div>
+                        {#                        <div>{{ preprocessing_form.store_as.label(class="form-label") }}#}
+                        <p class="mt-lg-3">Choose the format in the dataframe to store the preprocessed output. Some models can work
+                            with a string in each row, some require that each row has a lost of tokens.</p>
+                        {{ preprocessing_form.store_as(class = "form-select") }}
                     </div>
-                </form>
-
+                    <div class="mt-lg-2 mb-lg-2">{{ preprocessing_form.submit(class="btn btn-outline-primary btn-sm)") }}</div>
             </div>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Run a Model -->
+        <div class="col-md-6">
+            <h3>Run a Model</h3>
+            <!-- Placeholder for running a model form -->
         </div>
 
-        <div class="row">
-            <!-- Run a Model -->
-            <div class="col-md-6">
-                <h3>Run a Model</h3>
-                <!-- Placeholder for running a model form -->
-            </div>
+        <!-- View Model Outputs -->
+        <div class="col-md-6">
+            <h3>View Model Outputs</h3>
+            <!-- Placeholder for model outputs -->
 
-            <!-- View Model Outputs -->
-            <div class="col-md-6">
-                <h3>View Model Outputs</h3>
-                <!-- Placeholder for model outputs -->
-
-            </div>
         </div>
-        {% if processed_data_head %}
-            <h3>Processed Data Preview</h3>
-            <div>
-                {{ processed_data_head|safe }}  <!-- 'safe' filter to render HTML -->
-            </div>
-        {% endif %}
+    </div>
+    {% if processed_data_head %}
+        <h3>Processed Data Preview</h3>
+        <div>
+            {{ processed_data_head|safe }}  <!-- 'safe' filter to render HTML -->
+        </div>
+    {% endif %}
     </div>
 
 
