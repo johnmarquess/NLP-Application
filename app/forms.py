@@ -48,10 +48,13 @@ class PreprocessingForm(FlaskForm):
     remove_stopwords = BooleanField('Remove English Stop Words')
     remove_punctuation = BooleanField('Remove Punctuation')
     remove_spaces = BooleanField('Remove Spaces')
-    # Field for renaming the data column
+    remove_special_chars = BooleanField('Remove Special Characters')
+    remove_newlines = BooleanField('Remove Newline Characters')
+    lowercase = BooleanField('Make Lowercase')
+    # # Field for renaming the data column
     column_to_preprocess = SelectField('Select Column to Preprocess', choices=[], validators=[DataRequired()])
     # Options for storing the preprocessed data
-    store_as = SelectField('Store As', choices=[('dataframe', 'DataFrame'), ('tokens', 'List of Tokens')])
+    store_as = SelectField('Store As', choices=[('string', 'String'), ('tokens', 'List of Tokens')])
     submit = SubmitField('Process')
 
     def __init__(self, *args, **kwargs):

@@ -12,8 +12,8 @@
                     {{ spacy_model_form.csrf_token }}
                     {% for model in spacy_model_form.model %}
                         <div class="form-check">
-                            {{ model }}
-                            {{ model.label }}
+                            {{ model(class="form-check-input") }}
+                            {{ model.label(class="form-label") }}
                         </div>
                     {% endfor %}
                     <button type="submit" class="btn btn-outline-primary btn-sm">Load Model</button>
@@ -39,17 +39,34 @@
                                 <!-- This will be populated by JavaScript -->
                             </select>
                         </div>
+                        <div class="row mt-lg-2">
+                            <p>Select which  preprocessing functions you would like to perform</p>
+                            <div class="col-md-6">
+                                <!-- Display checkboxes for preprocessing options -->
+                                <div>{{ preprocessing_form.lemmatize(class="form-check-input") }} Lemmatize</div>
+                                <div>{{ preprocessing_form.lowercase(class="form-check-input") }} Make Lowercase</div>
+                                <div>{{ preprocessing_form.remove_stopwords(class="form-check-input") }} Remove English
+                                    Stop
+                                    Words
+                                </div>
+                                <div>{{ preprocessing_form.remove_punctuation(class="form-check-input") }} Remove
+                                    Punctuation
+                                </div>
+                            </div>
 
-                        <!-- Display checkboxes for preprocessing options -->
-                        <div>{{ preprocessing_form.lemmatize(class="form-check-input") }} Lemmatize</div>
-                        <div>{{ preprocessing_form.remove_stopwords(class="form-check-input") }} Remove English Stop
-                            Words
-                        </div>
-                        <div>{{ preprocessing_form.remove_punctuation(class="form-check-input") }} Remove Punctuation
-                        </div>
-                        <div>{{ preprocessing_form.remove_spaces(class="form-check-input") }} Remove Spaces</div>
-                        <!-- Field for renaming the data column -->
+                            <div class="col-md-6">
+                                <div>{{ preprocessing_form.remove_spaces(class="form-check-input") }} Remove Spaces
+                                </div>
+                                <!-- Field for renaming the data column -->
+                                <div> {{ preprocessing_form.remove_newlines(class="form-check-input") }} Remove
+                                    Newlines
+                                </div>
+                                <div> {{ preprocessing_form.remove_special_chars(class="form-check-input") }} Remove
+                                    Special Characters
+                                </div>
+                            </div>
 
+                        </div>
                         <!-- Options for storing the preprocessed data -->
                         <div>{{ preprocessing_form.store_as.label(class="form-label") }}
                             {{ preprocessing_form.store_as(class = "form-select") }}
@@ -72,14 +89,15 @@
             <div class="col-md-6">
                 <h3>View Model Outputs</h3>
                 <!-- Placeholder for model outputs -->
-                {% if processed_data_head %}
-                    <h3>Processed Data Preview</h3>
-                    <div>
-                        {{ processed_data_head|safe }}  <!-- 'safe' filter to render HTML -->
-                    </div>
-                {% endif %}
+
             </div>
         </div>
+        {% if processed_data_head %}
+            <h3>Processed Data Preview</h3>
+            <div>
+                {{ processed_data_head|safe }}  <!-- 'safe' filter to render HTML -->
+            </div>
+        {% endif %}
     </div>
 
 

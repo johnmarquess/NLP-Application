@@ -70,7 +70,7 @@ def view_saved_file():
             flash('No file selected', 'warning')
             return redirect(url_for('data_management.data_management'))
         try:
-            df = pd.read_csv(file_path, nrows=5)
+            df = pd.read_csv(file_path, nrows=10)
 
             # Convert the DataFrame to HTML with Bootstrap classes
             table_html = df.to_html(classes='table table-hover table-sm left-justified-headers',

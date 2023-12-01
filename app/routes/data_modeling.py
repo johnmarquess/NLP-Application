@@ -1,3 +1,5 @@
+import re
+
 import pandas as pd
 import spacy
 from flask import Blueprint, render_template, flash, session, request, jsonify
@@ -21,30 +23,36 @@ def load_spacy_model_from_session():
 
 
 # Function to preprocess each text entry
-def preprocess_text(text, nlp, lemmatize=True, remove_stopwords=True, remove_punct=True, remove_spaces=True):
+def preprocess_text(text, nlp, lemmatize=False, remove_stopwords=False, remove_punct=False, remove_spaces=False,
+                    remove_special_chars=False, remove_newlines=False, lowercase=False, store_as='string'):
     if pd.isna(text):
         return ''
     text = str(text)
+    if remove_newlines:
+        text = text.replace('\n', '')
+    if remove_special_chars:
+        text = re.sub(r'[^A-Za-z0-9 ]', ' ', text)  # Added space in regex to keep spaces
+    if lowercase:
+        text = text.lower()
 
     doc = nlp(text)
-    processed_text = []
+    processed_tokens = []
 
     for token in doc:
-        if lemmatize:
-            token_text = token.lemma_
-        else:
-            token_text = token.text
-
-        if remove_stopwords and token_text.lower() in STOP_WORDS:
+        if remove_stopwords and token.is_stop:
             continue
         if remove_punct and token.is_punct:
             continue
         if remove_spaces and token.is_space:
             continue
 
-        processed_text.append(token_text)
+        token_text = token.lemma_ if lemmatize else token.text
+        processed_tokens.append(token_text)
 
-    return ' '.join(processed_text)
+    if store_as == 'tokens':
+        return processed_tokens
+    else:
+        return ' '.join(processed_tokens)
 
 
 @data_modeling_bp.route('/get-columns')
@@ -85,18 +93,22 @@ def data_modeling():
 
             # Get the selected column
             selected_column = preprocessing_form.column_to_preprocess.data
-
+            store_as = preprocessing_form.store_as.data
             # Apply preprocessing to the selected column
             df['processed_text'] = df[selected_column].apply(lambda x: preprocess_text(
                 x,
                 nlp,  # Loaded spaCy model
                 lemmatize=preprocessing_form.lemmatize.data,
+                lowercase=preprocessing_form.lowercase.data,
                 remove_stopwords=preprocessing_form.remove_stopwords.data,
                 remove_punct=preprocessing_form.remove_punctuation.data,
-                remove_spaces=preprocessing_form.remove_spaces.data
+                remove_spaces=preprocessing_form.remove_spaces.data,
+                remove_special_chars=preprocessing_form.remove_special_chars.data,
+                remove_newlines=preprocessing_form.remove_newlines.data,
+                store_as=store_as
             ))
             processed_data_head = df.head().to_html(classes='table table-striped', header="true",
-                                                                      index=False)
+                                                    index=False)
 
             # Further processing or saving the preprocessed data
             # ...
