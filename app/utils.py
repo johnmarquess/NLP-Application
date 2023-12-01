@@ -11,6 +11,11 @@ def get_saved_files():
 
 
 def prepare_file_management_forms():
+    """
+    Prepare file management forms.
+
+    :return: A tuple containing form, raw_file_form, saved_file_form, raw_files, and saved_files.
+    """
     form = FileUploadForm()
     raw_file_form = RawFileSelectionForm()
     saved_file_form = SavedFileSelectionForm()

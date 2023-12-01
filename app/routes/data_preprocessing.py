@@ -12,6 +12,13 @@ data_preprocessing_bp = Blueprint('data_preprocessing', __name__)
 
 
 def load_spacy_model_from_session():
+    """
+    Load Spacy Model from Session
+
+    Loads a Spacy model based on the selected model choice stored in the session.
+
+    :return: A Spacy language model object or None if there was an error.
+    """
     model_choice = session.get('selected_model')
     if model_choice:
         try:
@@ -35,6 +42,20 @@ def load_spacy_model_from_session():
 # Function to preprocess each text entry
 def preprocess_text(text, nlp, lemmatize=False, remove_stopwords=False, remove_punct=False, remove_spaces=False,
                     remove_special_chars=False, remove_newlines=False, lowercase=False, store_as='string'):
+    """
+    :param text: The text to be preprocessed
+    :param nlp: The pre-trained spaCy model to be used for text processing
+    :param lemmatize: Whether to lemmatize the tokens. Defaults to False.
+    :param remove_stopwords: Whether to remove stopwords from the text. Defaults to False.
+    :param remove_punct: Whether to remove punctuation from the text. Defaults to False.
+    :param remove_spaces: Whether to remove spaces from the text. Defaults to False.
+    :param remove_special_chars: Whether to remove special characters from the text. Defaults to False.
+    :param remove_newlines: Whether to remove newline characters from the text. Defaults to False.
+    :param lowercase: Whether to convert the text to lowercase. Defaults to False.
+    :param store_as: The format to store the processed text. Defaults to 'string'. Choose between 'string' or 'tokens'.
+    :return: The preprocessed text or tokens, depending on the value of store_as parameter.
+
+    """
     if pd.isna(text):
         return ''
     text = str(text)
@@ -79,6 +100,19 @@ def get_columns():
 
 @data_preprocessing_bp.route('/data_preprocessing', methods=['GET', 'POST'])
 def data_preprocessing():
+    """
+    Preprocesses data using spaCy models and various options.
+    This route handles the following:
+    1. Load a spaCy model
+    2. Select a file to preprocess
+    3. Select a column to preprocess
+    4. Select preprocessing options
+    5. Preprocess the selected column
+    6. Save the processed data as a CSV file
+
+    :return: None
+
+    """
     spacy_model_form = SpacyModelForm()
     preprocessing_form = PreprocessingForm()
     processed_data_head = None

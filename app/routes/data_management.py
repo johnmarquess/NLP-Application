@@ -12,6 +12,11 @@ data_management_bp = Blueprint('data_management', __name__)
 
 @data_management_bp.route('/data-management', methods=['GET', 'POST'])
 def data_management():
+    """
+    Route function for handling the data management page.
+
+    :return: None
+    """
     form, raw_file_form, saved_file_form, raw_files, saved_files = prepare_file_management_forms()
 
     if form.validate_on_submit():
@@ -37,6 +42,13 @@ def data_management():
 
 @data_management_bp.route('/select-worksheet', methods=['POST'])
 def select_worksheet():
+    """
+    This method is used to select a specific worksheet from an Excel file.
+
+    :return: The rendered template 'worksheet_display.html', along with
+             column information, saved files, selected file, selected sheet,
+             and total number of rows in the worksheet.
+    """
     selected_file = request.form['selected_file']
     selected_sheet = request.form['selected_sheet']
     file_path = os.path.join('app', current_app.config['DATA_RAW'], selected_file)
@@ -54,6 +66,11 @@ def select_worksheet():
 
 @data_management_bp.route('/view-saved-file', methods=['POST'])
 def view_saved_file():
+    """
+    View the content of a saved file.
+
+    :return: None
+    """
     saved_file_form = SavedFileSelectionForm()
     saved_files = os.listdir(os.path.join('app', current_app.config['DATA_SAVED']))
     saved_file_form.selected_saved_file.choices = [(file, file) for file in saved_files]
