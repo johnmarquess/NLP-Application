@@ -1,9 +1,9 @@
+import os
 import re
 
 import pandas as pd
 import spacy
-from flask import Blueprint, render_template, flash, session, request, jsonify
-from spacy.lang.en.stop_words import STOP_WORDS
+from flask import Blueprint, render_template, flash, session, request, jsonify, current_app
 
 from app.forms import SpacyModelForm, PreprocessingForm
 from app.utils import get_file_path
@@ -107,11 +107,26 @@ def data_modeling():
                 remove_newlines=preprocessing_form.remove_newlines.data,
                 store_as=store_as
             ))
-            processed_data_head = df.head().to_html(classes='table table-striped', header="true",
+            processed_data_head = df.head().to_html(classes='table table-striped', header=True,
                                                     index=False)
 
-            # Further processing or saving the preprocessed data
-            # ...
+            if preprocessing_form.output_filename.data:
+                output_file = preprocessing_form.output_filename.data
+                # Append '.csv' if not already present
+                if not output_file.lower().endswith('.csv'):
+                    output_file += '.csv'
+
+                output_path = os.path.join(current_app.root_path, current_app.config['DATA_PROCESSED'], output_file)
+
+                # Check if file already exists and avoid overwriting
+                if os.path.exists(output_path):
+                    flash(f"File {output_file} already exists. Please choose a different name.", "warning")
+                else:
+                    try:
+                        df.to_csv(output_path, index=False)
+                        flash(f"Processed data saved as {output_file} in data_processed folder.", "success")
+                    except Exception as e:
+                        flash(f"Failed to save file: {e}", "error")
 
     return render_template('data_modeling.html', spacy_model_form=spacy_model_form,
                            preprocessing_form=preprocessing_form, processed_data_head=processed_data_head)

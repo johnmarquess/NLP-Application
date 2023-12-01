@@ -4,7 +4,7 @@ import pandas as pd
 from flask import current_app, flash
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import RadioField, SelectField, SubmitField, HiddenField, BooleanField
+from wtforms import RadioField, SelectField, SubmitField, HiddenField, BooleanField, StringField
 from wtforms.validators import DataRequired
 
 
@@ -42,7 +42,7 @@ class SpacyModelForm(FlaskForm):
 
 class PreprocessingForm(FlaskForm):
     # Dropdown for selecting the file
-    file = SelectField(label='Select a CSV file from your list of saved files.', validators=[DataRequired()])
+    file = SelectField(label='Choose a CSV file from your list of saved files.', validators=[DataRequired()])
     # Checkbox fields for preprocessing options
     lemmatize = BooleanField('Lemmatize')
     remove_stopwords = BooleanField('Remove English Stop Words')
@@ -52,14 +52,14 @@ class PreprocessingForm(FlaskForm):
     remove_newlines = BooleanField('Remove Newline Characters')
     lowercase = BooleanField('Make Lowercase')
     # # Field for renaming the data column
-    column_to_preprocess = SelectField('Select column to preprocess', choices=[], validators=[DataRequired()])
+    column_to_preprocess = SelectField('Choose column to preprocess', choices=[], validators=[DataRequired()])
     # Options for storing the preprocessed data
     store_as = SelectField('Store As', choices=[('string', 'String'), ('tokens', 'List of Tokens')])
     submit = SubmitField('Process')
+    output_filename = StringField('Output Filename', validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
         super(PreprocessingForm, self).__init__(*args, **kwargs)
-        self.column_to_preprocess.choices = [('default', 'Please Select a File First')]
         self.populate_file_choices()
 
     def populate_file_choices(self):
@@ -69,10 +69,11 @@ class PreprocessingForm(FlaskForm):
         # Check if directory exists
         if os.path.exists(saved_files_path):
             saved_files = [f for f in os.listdir(saved_files_path) if f.endswith('.csv')]
-            self.file.choices = [(f, f) for f in saved_files]
+            # Add a placeholder at the beginning of the choices
+            self.file.choices = [('', 'Select a CSV File')] + [(f, f) for f in saved_files]
         else:
             # Handle the case where the directory does not exist
-            self.file.choices = []
+            self.file.choices = [('', 'Select a CSV File')]
             flash("Data saved directory not found.", "error")
 
     def populate_column_choices(self, file_path):
