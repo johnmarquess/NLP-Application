@@ -19,10 +19,18 @@
             <div class="row">
                 <!-- Data Management -->
                 <div class="col">
-                    <img src="{{ url_for('static', filename='img/data_management.png') }}" alt="Data Management" width="200">
+                    <img src="{{ url_for('static', filename='img/data_management2.png') }}" alt="Data Management" width="200">
                     <h3>Data Management</h3>
                     <p>Description of Data Management.</p>
                     <a href="{{ url_for('data_management.data_management') }}" class="btn btn-outline-primary">Learn More</a>
+                </div>
+
+                <!-- Pre-processing -->
+                <div class="col">
+                    <img src="{{ url_for('static', filename='img/data_processing.png') }}" alt="Reporting" width="200">
+                    <h3>Data Processing</h3>
+                    <p>Description of Processing.</p>
+                    <a href="{{ url_for('reporting.reporting') }}" class="btn btn-outline-primary">Learn More</a>
                 </div>
 
                 <!-- Data Modeling -->
@@ -33,13 +41,7 @@
                     <a href="{{ url_for('data_modeling.data_modeling') }}" class="btn btn-outline-primary">Learn More</a>
                 </div>
 
-                <!-- Reporting -->
-                <div class="col">
-                    <img src="{{ url_for('static', filename='img/reporting.png') }}" alt="Reporting" width="200">
-                    <h3>Reporting</h3>
-                    <p>Description of Reporting.</p>
-                    <a href="{{ url_for('reporting.reporting') }}" class="btn btn-outline-primary">Learn More</a>
-                </div>
+
             </div>
         </div>
     </section>
