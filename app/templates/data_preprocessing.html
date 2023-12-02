@@ -64,8 +64,8 @@
                         <!-- Options for storing the preprocessed data -->
                         {#                        <div>{{ preprocessing_form.store_as.label(class="form-label") }}#}
                         <p class="mt-lg-3">Choose the format in the dataframe to store the preprocessed output. Some
-                            models can work
-                            with a string in each row, some require that each row has a lost of tokens.</p>
+                            models can work with a string in each row, some require that each row has a lost of
+                            tokens.</p>
                         {{ preprocessing_form.store_as(class = "form-select") }}
                     </div>
                     <div>
@@ -116,8 +116,7 @@
 
     <div class="container">
         <h3 class="mt-lg-5">Processed Data Preview</h3>
-        <p>This will show the first 5 rows of the pre-processed data.</p>
-        <p>Pre-processed data are in a column called processed_text</p>
+        <p>This will show the first 5 rows of the pre-processed data. Pre-processed data are in a column called processed_text</p>
         {% if processed_data_head %}
 
             <div>

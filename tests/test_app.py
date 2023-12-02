@@ -9,7 +9,7 @@ from app.config import TestConfig
 
 @pytest.fixture
 def app():
-    app = create_app(TestConfig)
+    app = create_app()
     yield app
 
 
