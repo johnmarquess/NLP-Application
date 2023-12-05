@@ -18,15 +18,6 @@ def handle_file_upload(form, file_manager):
     return False  # Indicate no upload or failure
 
 
-def handle_spreadsheet_processing(form, file_manager):
-    if form.validate_on_submit():
-        selected_file = form.file_choice.data
-        if selected_file:
-            worksheets = file_manager.list_worksheets(os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
-            form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
-        # Additional logic if needed for processing a selected worksheet
-
-
 @file_manager_bp.route('/get-files', methods=['GET'])
 def get_files():
     file_manager = FileManagement()
@@ -51,10 +42,13 @@ def file_manager():
 
     if 'select_spreadsheet' in request.form:
         selected_file = spreadsheet_form.file_choice.data
-        spreadsheet_form.selected_file.data = selected_file
-        worksheets = file_manager_instance.list_worksheets(
-            os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
-        spreadsheet_form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
+        if selected_file:
+            spreadsheet_form.selected_file.data = selected_file
+            worksheets = file_manager_instance.list_worksheets(
+                os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
+            spreadsheet_form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
+        else:
+            flash("No file selected.", "warning")
 
     if 'view_worksheet' in request.form and spreadsheet_form.worksheet_choice.data:
         selected_file = spreadsheet_form.selected_file.data  # Retrieve the hidden field value

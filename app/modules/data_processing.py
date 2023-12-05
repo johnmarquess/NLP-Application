@@ -2,55 +2,13 @@ import re
 
 import pandas as pd
 import spacy
-from flask import flash, session
+from flask import flash, session,jsonify
 
 
 class NLPProcessor:
     def __init__(self, nlp):
         # Load the specified spaCy model
         self.nlp = nlp
-
-    def process_text(self, text, options):
-        """
-        Process the given text based on the specified options.
-
-        :param text: The text to be processed.
-        :param options: A dictionary containing boolean values for various processing tasks.
-        :return: Processed text.
-        """
-
-        doc = self.nlp(text)
-        processed_tokens = []
-
-        for token in doc:
-            # Apply various processing based on the options
-            if options.get('lemmatize', False) and token.lemma_ != "-PRON-":
-                processed_token = token.lemma_
-            else:
-                processed_token = token.text
-
-            if options.get('lowercase', False):
-                processed_token = processed_token.lower()
-
-            if options.get('remove_stopwords', False) and token.is_stop:
-                continue
-
-            if options.get('remove_punctuation', False) and token.is_punct:
-                continue
-
-            if options.get('remove_special_chars', False) and not token.is_alpha:
-                continue
-
-            if options.get('remove_spaces', False) and token.is_space:
-                continue
-
-            processed_tokens.append(processed_token)
-
-        # Optionally, join tokens into a single string
-        if options.get('return_string', True):
-            return ' '.join(processed_tokens)
-        else:
-            return processed_tokens
 
     @staticmethod
     def load_spacy_model_from_session():
@@ -62,8 +20,8 @@ class NLPProcessor:
             try:
                 if model_choice in ['en_core_web_sm', 'en_core_web_md', 'en_core_web_lg']:
                     nlp = spacy.load(model_choice)
-                elif model_choice == 'en':
-                    nlp = spacy.blank('en')
+                # elif model_choice == 'en':
+                #     nlp = spacy.blank('en')
                 else:
                     flash(f"Invalid model choice: {model_choice}", 'danger')
                     return None
