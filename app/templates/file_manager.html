@@ -6,7 +6,7 @@
 
     <!-- File Upload Section -->
 
-    <h2 class="mt-lg-5 mb-lg-2">Upload a spreadsheet file.</h2>
+    <h3 class="mt-lg-5 mb-lg-2">Upload a spreadsheet file.</h3>
     <p>This is the first step in the data processing pipeline. You can upload a
         spreadsheet file from here. It will allow you to search for a file on your computer which will be saved to
         the <code>data/data_raw/</code> folder.
@@ -40,7 +40,7 @@
 
     <div class="row">
         <div class="col-md-6">
-            <h2>Spreadsheet files in data/raw</h2>
+            <h3 class="mb-lg-1 mt-lg-4">Spreadsheet files in data/raw</h3>
             <!-- Section 2: Select Spreadsheet -->
             <form action="{{ url_for('file_manager.file_manager') }}" method="post">
                 {{ spreadsheet_form.hidden_tag() }}
@@ -79,7 +79,7 @@
 
 
         <div class="col-md-6">
-            <h2>CSV files in data/clean</h2>
+            <h3 class="mb-lg-1 mt-lg-4">CSV files in data/clean</h3>
             <form action="{{ url_for('file_manager.file_manager') }}" method="post">
                 {% for file in clean_files %}
                     <div class="form-check">

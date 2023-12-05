@@ -13,6 +13,16 @@ data_processor_bp = Blueprint('data_processor', __name__)
 
 @data_processor_bp.route('/data-processing', methods=['GET', 'POST'])
 def data_processing():
+    """
+    Function that handles data processing endpoint.
+    - controls model selection and stores in session - calls load_spacy_model_from_session()
+    - controls data processing options
+    - handles files saving - calls save_as_csv()
+    - handles file viewing - calls view_csv_contents()
+    - produces summary of model / data features
+
+    Returns: rendered template with model selection form, data processing form, summary and table HTML
+    """
     file_manager = FileManagement()
     model_form = SpacyModelForm()
     preprocess_form = DataProcessingForm()
@@ -55,8 +65,6 @@ def data_processing():
             df['processed_data'] = df[preprocess_form.column_to_preprocess.data].apply(
                 lambda x: processor.preprocess_text(x, options)
             )
-
-            # Debug statement
 
             summary['Model'] = nlp.meta['name']
             summary['Processed File'] = preprocess_form.file.data
