@@ -1,5 +1,31 @@
-.left-justified-headers th {
-    text-align: left;
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,400;0,500;1,400;1,500&family=Poppins:ital,wght@0,400;0,500;1,400;1,500&family=Roboto+Mono:ital,wght@0,400;0,500;0,600;1,300;1,400&display=swap');
+
+h1, h2, h3, h4, h5, h6, p{
+    font-family: 'Roboto', sans-serif;
+}
+
+.list-group {
+    font-family: 'Roboto', sans-serif;
+}
+
+.table-inconsolata {
+    font-family: 'Inconsolata', monospace;
+    background-color: #a6c2e5;
+}
+
+.table-noto {
+    font-family: 'Noto', monospace;
+    font-size: 0.9em;
+    border: 1px solid rgba(30, 98, 222, 0.62);
+
+}
+
+
+.navbar {
+    border-bottom: 2px solid rgba(13, 109, 251, 0.6);
+    margin-bottom: 2em;
+    min-height: 60px;
+    padding: 0;
 }
 
 .list-group-item {
@@ -8,9 +34,3 @@
 
 }
 
-.navbar {
-    border-bottom: 2px solid rgba(13, 109, 251, 0.6);
-    margin-bottom: 2em;
-    min-height: 60px;
-    padding: 0;
-}
