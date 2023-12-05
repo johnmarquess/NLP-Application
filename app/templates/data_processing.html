@@ -16,15 +16,20 @@
                 <!-- Assuming the model select field in your form -->
 
                 {{ model_form.model(class="form-select mb-3", id="model-select") }}
-
             </form>
 
             <form method="post">
                 {{ preprocess_form.hidden_tag() }}
+
+                <span id="columns-url" style="display:none;"
+                      data-url="{{ url_for('data_processor.get_columns', filename='') }}"></span>
+
                 <div class="mb-3">
                     <label class="form-label">Select a file to process</label>
                     {{ preprocess_form.file(class="form-select", id="file-select") }}
+
                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">And a colum from that file</label>
                     {{ preprocess_form.column_to_preprocess(class="form-select", id="column-select") }}
@@ -111,34 +116,7 @@
                 </div>
             {% endif %}
         </div>
-
-
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var fileSelect = document.getElementById('file-select');
-            var columnSelect = document.getElementById('column-select');
-
-            fileSelect.addEventListener('change', function () {
-                var filename = this.value;
-                if (filename) {
-                    fetch('{{ url_for("data_processor.get_columns", filename="") }}' + filename)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.error) {
-                                alert('Error: ' + data.error);
-                            } else {
-                                columnSelect.innerHTML = '';
-                                data.forEach(function (column) {
-                                    var option = new Option(column, column);
-                                    columnSelect.add(option);
-                                });
-                            }
-                        }).catch(error => console.error('Fetch Error:', error));
-                }
-            });
-        });
-    </script>
 
 
 

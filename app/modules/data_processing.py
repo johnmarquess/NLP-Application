@@ -20,8 +20,8 @@ class NLPProcessor:
             try:
                 if model_choice in ['en_core_web_sm', 'en_core_web_md', 'en_core_web_lg']:
                     nlp = spacy.load(model_choice)
-                elif model_choice == 'en':
-                    nlp = spacy.blank('en')
+                # elif model_choice == 'en':
+                #     nlp = spacy.blank('en')
                 else:
                     flash(f"Invalid model choice: {model_choice}", 'danger')
                     return None

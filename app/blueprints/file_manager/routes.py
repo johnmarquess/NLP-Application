@@ -18,15 +18,6 @@ def handle_file_upload(form, file_manager):
     return False  # Indicate no upload or failure
 
 
-def handle_spreadsheet_processing(form, file_manager):
-    if form.validate_on_submit():
-        selected_file = form.file_choice.data
-        if selected_file:
-            worksheets = file_manager.list_worksheets(os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
-            form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
-        # Additional logic if needed for processing a selected worksheet
-
-
 @file_manager_bp.route('/get-files', methods=['GET'])
 def get_files():
     file_manager = FileManagement()

@@ -12,7 +12,7 @@ class SpacyModelForm(FlaskForm):
         ('en_core_web_sm', 'English - Small'),
         ('en_core_web_md', 'English - Medium'),
         ('en_core_web_lg', 'English - Large'),
-        ('en', 'English - Blank')
+        # ('en', 'English - Blank')
     ], render_kw={"id": "model-select"})
 
 

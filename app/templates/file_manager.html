@@ -23,9 +23,13 @@
         <input class="mb-3" type="hidden" name="upload" value="upload">
 
         <!-- Input Field in a Column -->
-        <div class="col-md-5 mb-3">
-            {{ upload_form.file(class="form-control-file") }}
-        </div>
+
+            <label>
+                <select class="form-control">
+                    {{ upload_form.file }}
+                </select>
+            </label>
+
 
         <!-- Button in a Column -->
         <div class="col-md-1">
