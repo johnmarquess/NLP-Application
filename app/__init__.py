@@ -1,30 +1,17 @@
 from flask import Flask
-import os
-from app.config import DevelopmentConfig, ProductionConfig, TestConfig
-from .routes.data_management import data_management_bp
-from .routes.data_modeling import data_modeling_bp
-from .routes.file_handling import file_handling_bp
-from .routes.main import main_bp
-from .routes.data_preprocessing import data_preprocessing_bp
+
+from .blueprints.file_manager.routes import file_manager_bp
+from .blueprints.home.routes import main_bp
+from .blueprints.data_processor.routes import data_processor_bp
 
 
 def create_app():
-
-    env = os.getenv('FLASK_ENV', 'development')
-    if env == 'development':
-        config_class = DevelopmentConfig
-    elif env == 'testing':
-        config_class = TestConfig
-    else:
-        config_class = ProductionConfig
-
     app = Flask(__name__)
-    app.config.from_object(config_class)
+    app.config.from_object('config.DevelopmentConfig')  # Adjust as needed
 
-    app.register_blueprint(file_handling_bp)
-    app.register_blueprint(data_management_bp)
-    app.register_blueprint(data_modeling_bp)
-    app.register_blueprint(data_preprocessing_bp)
+    # Other blueprints and configurations
     app.register_blueprint(main_bp)
+    app.register_blueprint(file_manager_bp)
+    app.register_blueprint(data_processor_bp)
 
     return app

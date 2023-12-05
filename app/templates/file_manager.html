@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container mt-lg-5">
+    <h1>File Manager</h1>
+
+    <!-- File Upload Section -->
+
+    <h2 class="mt-lg-5 mb-lg-2">Upload a spreadsheet file.</h2>
+    <p>This is the first step in the data processing pipeline. You can upload a
+        spreadsheet file from here. It will allow you to search for a file on your computer which will be saved to
+        the <code>data/data_raw/</code> folder.
+    <p>This processing will only work for <code>.xlsx</code> or <code>.xls</code> files.
+    </p>
+    <p>Also, please remember people can do stupid things with spreadsheets. It is good practice review for merged
+        header
+        rows or banner images before you upload.
+    </p>
+
+
+    <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data">
+        {{ upload_form.hidden_tag() }}
+        <input type="hidden" name="upload" value="upload">  <!-- Hidden field to identify form -->
+        <div class="mb-3">
+{#            {{ upload_form.file.label }}<br>#}
+            {{ upload_form.file(class="form-control") }}
+        </div>
+
+        {{ upload_form.submit(class="btn btn-outline-primary btn-sm") }}
+    </form>
+
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Spreadsheet files in data/raw</h2>
+            <!-- Section 2: Select Spreadsheet -->
+            <form action="{{ url_for('file_manager.file_manager') }}" method="post">
+                {{ spreadsheet_form.hidden_tag() }}
+                {{ spreadsheet_form.selected_file() }}
+                <input type="hidden" name="select_spreadsheet" value="select_spreadsheet">
+                <div class="mb-3">
+                    <label>Select a Spreadsheet File:</label>
+                    {% for choice in spreadsheet_form.file_choice %}
+                        <div class="form-check">
+                            {{ choice(class="form-check-input") }}
+                            {{ choice.label(class="form-check-label") }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-outline-primary btn-sm">Select Spreadsheet</button>
+                <button type="submit" formaction="{{ url_for('file_manager.delete_file', file_type='raw') }}"
+                        class="btn btn-outline-danger btn-sm">Delete file
+                </button>
+
+            </form>
+
+
+            <!-- Section 3: Worksheet Selection Form -->
+            {% if spreadsheet_form.worksheet_choice.choices %}
+                <form action="{{ url_for('file_manager.file_manager') }}" method="post">
+                    {{ spreadsheet_form.hidden_tag() }}
+                    <input type="hidden" name="view_worksheet" value="view_worksheet">
+                    <div class="mb-3">
+                        {{ spreadsheet_form.worksheet_choice.label }}
+                        {{ spreadsheet_form.worksheet_choice(class="form-select") }}
+                    </div>
+                    {{ spreadsheet_form.submit(class="btn btn-outline-primary btn-sm", value="View Worksheet") }}
+                </form>
+            {% endif %}
+        </div>
+
+
+        <div class="col-md-6">
+            <h2>CSV files in data/clean</h2>
+            <form action="{{ url_for('file_manager.file_manager') }}" method="post">
+                {% for file in clean_files %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="file_choice" value="{{ file }}">
+                        <label class="form-check-label">{{ file }}</label>
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-outline-primary btn-sm">View File</button>
+                <button type="submit"
+                        formaction="{{ url_for('file_manager.delete_file', file_type='clean') }}"
+                        class="btn btn-outline-danger btn-sm">Delete Selected File
+                </button>
+            </form>
+        </div>
+    </div>
+    <!-- Form for deleting a file from clean -->
+
+
+    <!-- Display Table for Selected File -->
+    <div class="row">
+        <div class="col-md-12">
+            {% if table_html %}
+                <div>
+                    {{ table_html | safe }}
+                </div>
+            {% endif %}
+        </div>
+
+
+    </div>
+
+{% endblock %}
