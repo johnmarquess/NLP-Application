@@ -42,10 +42,13 @@ def file_manager():
 
     if 'select_spreadsheet' in request.form:
         selected_file = spreadsheet_form.file_choice.data
-        spreadsheet_form.selected_file.data = selected_file
-        worksheets = file_manager_instance.list_worksheets(
-            os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
-        spreadsheet_form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
+        if selected_file:
+            spreadsheet_form.selected_file.data = selected_file
+            worksheets = file_manager_instance.list_worksheets(
+                os.path.join(current_app.config['RAW_DATA_DIR'], selected_file))
+            spreadsheet_form.worksheet_choice.choices = [(ws, ws) for ws in worksheets]
+        else:
+            flash("No file selected.", "warning")
 
     if 'view_worksheet' in request.form and spreadsheet_form.worksheet_choice.data:
         selected_file = spreadsheet_form.selected_file.data  # Retrieve the hidden field value
