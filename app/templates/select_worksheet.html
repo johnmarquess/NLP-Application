@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Worksheet Selection Form -->
+    <form method="post">
+        {{ worksheet_form.hidden_tag() }}
+        {{ worksheet_form.worksheet_choice.label }} {{ worksheet_form.worksheet_choice() }}
+        {{ worksheet_form.submit() }}
+    </form>
+{% endblock %}
