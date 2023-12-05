@@ -14,6 +14,15 @@ instance/*
 .env
 
 ### Python template
+### User added
+*.xls
+*.xlsx
+*.csv
+
+!test_file.xlsx
+!test_file.xls
+!test_file.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
