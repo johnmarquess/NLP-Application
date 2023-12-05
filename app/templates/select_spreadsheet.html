@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+    <!-- Spreadsheet File Selection Form -->
+    <form method="post">
+        {{ spreadsheet_form.hidden_tag() }}
+        <div class="mb-3">
+            {% for choice in spreadsheet_form.file_choice %}
+                <div class="form-check">
+                    {{ choice(class="form-check-input") }}
+                    {{ choice.label(class="form-check-label") }}
+                </div>
+            {% endfor %}
+        </div>
+        {{ spreadsheet_form.submit(class="btn btn-primary") }}
+    </form>
+{% endblock %}

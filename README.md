@@ -39,7 +39,7 @@ venv\Scripts\activate  # For Windows
 ```bash
 pip install -r requirements.txt
 ```
-Another dependency is that  you need to have the correct spaCy models downloaded and installed. For example ` python -m spacy download en_core_web_sm` to download and install the small English web core model. More information at the [spaCy website](https://spacy.io/usage/models).   
+Another dependency is that  you need to have the correct spaCy models downloaded and installed. For example ` python -m spacy download en_core_web_sm` to download and install the small English web core model. More information at the [spaCy website](https://spacy.io/usage/models).
 
 4. Run the Application:
 
@@ -73,7 +73,7 @@ After starting the application, navigate to http://localhost:5000 in your web br
   and save the selection as a new .csv file.
 - __Model Integration:__ In the Data Modeling section, choose and configure NLP models for analysis.
 
-There is a test data file in the `data/data_raw` folder that contains some Amazon reviews that I found on [Kaggle](https://www.kaggle.com/datafiniti/consumer-reviews-of-amazon-products).) 
+There is a test data file in the `data/data_raw` folder that contains some Amazon reviews that I found on [Kaggle](https://www.kaggle.com/datafiniti/consumer-reviews-of-amazon-products).)
 
 
 ## Configuration ##

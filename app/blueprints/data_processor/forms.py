@@ -3,31 +3,8 @@ import os
 import pandas as pd
 from flask import current_app, flash
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from wtforms import RadioField, SelectField, SubmitField, HiddenField, BooleanField, StringField
+from wtforms import SelectField, SubmitField, BooleanField, StringField
 from wtforms.validators import DataRequired
-
-
-class FileUploadForm(FlaskForm):
-    file = FileField('Choose File', validators=[
-        DataRequired(message='No file selected!'),
-        FileAllowed(['xls', 'xlsx'], 'Only .xls and .xlsx files can be uploaded here!')
-    ])
-    submit = SubmitField('Upload')
-
-
-class RawFileSelectionForm(FlaskForm):
-    selected_file = RadioField('Select File', choices=[])
-
-
-class SavedFileSelectionForm(FlaskForm):
-    selected_saved_file = RadioField('Select Saved File', choices=[])
-
-
-class WorksheetSelectionForm(FlaskForm):
-    selected_worksheet = SelectField('Select Worksheet', choices=[])
-    selected_file = HiddenField()  # Hidden field to store selected file name
-    submit = SubmitField('View Columns')
 
 
 class SpacyModelForm(FlaskForm):
@@ -39,7 +16,7 @@ class SpacyModelForm(FlaskForm):
     ], render_kw={"id": "model-select"})
 
 
-class PreprocessingForm(FlaskForm):
+class DataProcessingForm(FlaskForm):
     # Dropdown for selecting the file
     file = SelectField(label='Choose a CSV file from your list of saved files.', validators=[DataRequired()])
     # Checkbox fields for preprocessing options
@@ -57,21 +34,16 @@ class PreprocessingForm(FlaskForm):
     submit = SubmitField('Process')
     output_filename = StringField('Output Filename', validators=[DataRequired()])
 
-    def __init__(self, *args, **kwargs):
-        super(PreprocessingForm, self).__init__(*args, **kwargs)
-        self.populate_file_choices()
+    # def __init__(self, *args, **kwargs):
+    #     super(DataProcessingForm, self).__init__(*args, **kwargs)
+    #     self.populate_file_choices()
 
     def populate_file_choices(self):
-        # Constructing an absolute path to the 'data_saved' directory
-        saved_files_path = os.path.join(current_app.root_path, current_app.config['DATA_SAVED'])
-
-        # Check if directory exists
+        saved_files_path = os.path.join(current_app.root_path, current_app.config['CLEAN_DATA_DIR'])
         if os.path.exists(saved_files_path):
             saved_files = [f for f in os.listdir(saved_files_path) if f.endswith('.csv')]
-            # Add a placeholder at the beginning of the choices
             self.file.choices = [('', 'Select a CSV File')] + [(f, f) for f in saved_files]
         else:
-            # Handle the case where the directory does not exist
             self.file.choices = [('', 'Select a CSV File')]
             flash("Data saved directory not found.", "error")
 
