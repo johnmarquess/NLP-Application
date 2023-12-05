@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;500;600;700&family=Noto+Sans:ital,wght@0,400;0,500;1,400;1,500&family=Poppins:ital,wght@0,400;0,500;1,400;1,500&family=Roboto+Mono:ital,wght@0,400;0,500;0,600;1,300;1,400&display=swap');
 
-h1, h2, h3, h4, h5, h6, p{
+h1, h2, h3, h4, h5, h6, p {
     font-family: 'Roboto', sans-serif;
 }
 
@@ -34,3 +34,9 @@ h1, h2, h3, h4, h5, h6, p{
 
 }
 
+.custom-navbar .navbar-nav {
+    padding-left: 200px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: lighter; /* Adjust this value as needed */
+    font-size: 1.1em;
+}
