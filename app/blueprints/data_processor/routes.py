@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+import spacy
 from flask import Blueprint, render_template, flash, current_app, redirect, url_for, session, request, jsonify
 
 from app.modules.data_processing import NLPProcessor
@@ -15,7 +16,6 @@ def data_processing():
     file_manager = FileManagement()
     model_form = SpacyModelForm()
     preprocess_form = DataProcessingForm()
-
     preprocess_form.populate_file_choices()
     summary = {}
     processed_data_head = None
@@ -57,7 +57,8 @@ def data_processing():
             )
 
             try:
-                processed_data_head = df.head().to_html(classes='table table-hover table-sm', justify='left', index=False)
+                processed_data_head = df.head().to_html(classes='table table-hover table-sm', justify='left',
+                                                        index=False)
             except Exception as e:
                 flash(f'An error occurred while creating the HTML table: {e}', 'error')
                 print(f'An error occurred while creating the HTML table: {e}')  # Debug statement
@@ -95,6 +96,25 @@ def data_processing():
     return render_template('data_processing.html', model_form=model_form,
                            preprocess_form=preprocess_form, processed_data_head=processed_data_head,
                            summary=summary)
+
+
+@data_processor_bp.route('/load-model', methods=['POST'])
+def load_model():
+    data = request.get_json()
+    model_choice = data.get('model')
+
+    try:
+        if model_choice in ['en_core_web_sm', 'en_core_web_md', 'en_core_web_lg']:
+            nlp = spacy.load(model_choice)
+        elif model_choice == 'en':
+            nlp = spacy.blank('en')
+        else:
+            return jsonify({'status': 'error', 'message': f"Invalid model choice: {model_choice}"}), 400
+
+        session['selected_model'] = model_choice
+        return jsonify({'status': 'success', 'message': f"Model {model_choice} loaded successfully."})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': f"Failed to load model {model_choice}: {str(e)}"}), 500
 
 
 @data_processor_bp.route('/get-columns/<filename>')

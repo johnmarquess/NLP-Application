@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% block title %}File Processing{% endblock %}
 {% block content %}
     <div class="container mt-lg-5">
     <h1>File Manager</h1>
@@ -17,16 +18,22 @@
     </p>
 
 
-    <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data">
+    <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data" class="row">
         {{ upload_form.hidden_tag() }}
-        <input type="hidden" name="upload" value="upload">  <!-- Hidden field to identify form -->
-        <div class="mb-3">
-{#            {{ upload_form.file.label }}<br>#}
-            {{ upload_form.file(class="form-control") }}
+        <input class="mb-3" type="hidden" name="upload" value="upload">
+
+        <!-- Input Field in a Column -->
+        <div class="col-md-5 mb-3">
+            {{ upload_form.file(class="form-control-file") }}
         </div>
 
-        {{ upload_form.submit(class="btn btn-outline-primary btn-sm") }}
+        <!-- Button in a Column -->
+        <div class="col-md-1">
+            {{ upload_form.submit(class="btn btn-outline-primary btn-sm") }}
+        </div>
+        <!-- Hidden field to identify form -->
     </form>
+
 
 
 

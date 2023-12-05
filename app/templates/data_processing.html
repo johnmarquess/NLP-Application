@@ -1,27 +1,35 @@
 <!-- data_processing.html -->
 {% extends 'base.html' %}
-{% block title %}Data processing{% endblock %}
+{% block title %}Data Processing{% endblock %}
 {% block content %}
     <div class="container mt-lg-5">
-    <h2 class="mb-lg-5">Data pre-processing</h2>
+    <h1 class="mb-lg-5">Data pre-processing</h1>
     <div class="row">
         <div class="col-md-6">
-            <form method="post" class="mb-3">
+            <h3>Model selection and processing Options</h3>
+            <p>Choose the model and the options you want to use for pre-processing</p>
+            <p>After you have selected the model and the options, click the <strong>Process Data</strong> button to
+                pre-process the data</p>
+            <label class="form-label">Select a spaCy model</label>
+            <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data">
                 {{ model_form.hidden_tag() }}
-                {{ model_form.model(class="form-select", id="model-select") }}
-                <input type="submit" name="model_submit" value="Select Model"
-                       class="btn btn-outline-primary btn-sm mb-4">
+                <!-- Assuming the model select field in your form -->
+
+                {{ model_form.model(class="form-select mb-3", id="model-select") }}
+
             </form>
 
             <form method="post">
                 {{ preprocess_form.hidden_tag() }}
                 <div class="mb-3">
-                    <label class="form-label"><h5>File and Preprocessing Options</h5></label>
+                    <label class="form-label">Select a file to process</label>
                     {{ preprocess_form.file(class="form-select", id="file-select") }}
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">And a colum from that file</label>
                     {{ preprocess_form.column_to_preprocess(class="form-select", id="column-select") }}
                 </div>
+                <h5 class="form-label">Choose your processing options</h5>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-check">
