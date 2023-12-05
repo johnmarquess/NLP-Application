@@ -18,7 +18,7 @@ def data_processing():
     preprocess_form = DataProcessingForm()
     preprocess_form.populate_file_choices()
     summary = {}
-    processed_data_head = None
+    table_html = None
 
     if 'model_submit' in request.form and model_form.validate_on_submit():
         session['selected_model'] = model_form.model.data
@@ -56,12 +56,7 @@ def data_processing():
                 lambda x: processor.preprocess_text(x, options)
             )
 
-            try:
-                processed_data_head = df.head().to_html(classes='table table-hover table-sm', justify='left',
-                                                        index=False)
-            except Exception as e:
-                flash(f'An error occurred while creating the HTML table: {e}', 'error')
-                print(f'An error occurred while creating the HTML table: {e}')  # Debug statement
+            # Debug statement
 
             summary['Model'] = nlp.meta['name']
             summary['Processed File'] = preprocess_form.file.data
@@ -88,14 +83,13 @@ def data_processing():
                         save_message = file_manager.save_as_csv(df, output_file,
                                                                 current_app.config['PROCESSED_DATA_DIR'])
                         flash(save_message, 'success')
+                        # Generate table HTML from the saved file
+                        table_html = file_manager.view_csv_contents(output_path)
                     except Exception as e:
                         flash(f'Failed to save file: {e}', 'error')
 
-            # return redirect(url_for('data_processor.data_processing'))
-
     return render_template('data_processing.html', model_form=model_form,
-                           preprocess_form=preprocess_form, processed_data_head=processed_data_head,
-                           summary=summary)
+                           preprocess_form=preprocess_form, summary=summary, table_html=table_html)
 
 
 @data_processor_bp.route('/load-model', methods=['POST'])
