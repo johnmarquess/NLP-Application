@@ -20,23 +20,20 @@
 
     <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data" class="row">
         {{ upload_form.hidden_tag() }}
-        <input class="mb-3" type="hidden" name="upload" value="upload">
+        <input type="hidden" name="upload" value="upload" class="mb-3">
 
-        <!-- Input Field in a Column -->
+        <!-- File Input Field in a Column -->
+        <div class="col-md-5 mb-3">
+{#            {{ upload_form.file.label(class="form-label") }}#}
+            {{ upload_form.file(class="form-control") }}
+        </div>
 
-            <label>
-                <select class="form-control">
-                    {{ upload_form.file }}
-                </select>
-            </label>
-
-
-        <!-- Button in a Column -->
+        <!-- Submit Button in a Column -->
         <div class="col-md-1">
             {{ upload_form.submit(class="btn btn-outline-primary btn-sm") }}
         </div>
-        <!-- Hidden field to identify form -->
     </form>
+
 
 
 
