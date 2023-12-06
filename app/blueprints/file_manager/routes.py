@@ -139,9 +139,8 @@ def export_selected_columns():
     if drop_empty:
         df.dropna(subset=updated_selected_columns, how='all', inplace=True)
 
-    save_message = file_manager_instance.save_as_csv(df, custom_file_name, current_app.config['CLEAN_DATA_DIR'],
-                                                     encoding='utf-8-sig')
-    flash(save_message)
+    save_message = file_manager_instance.save_as_csv(df, custom_file_name, 'CLEAN_DATA_DIR')
+    flash(save_message, 'success')
     return redirect(url_for('file_manager.file_manager'))
 
 

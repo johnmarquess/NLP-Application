@@ -12,6 +12,7 @@ class ModelSelectionForm(FlaskForm):
     ])
     submit = SubmitField('Select')
 
-    class ModelDataSelectionForm(FlaskForm):
-        file = SelectField('Select File', validators=[DataRequired()])
-        column = SelectField('Select Column', validators=[DataRequired()], default='processed')
+
+class ModelDataSelectionForm(FlaskForm):
+    file = SelectField('Select File', validators=[DataRequired()])
+    column = SelectField('Select Column', validators=[DataRequired()], default='processed_data')
