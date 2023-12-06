@@ -116,12 +116,6 @@ class FileManagement:
 
     @staticmethod
     def get_csv_columns(file_path):
-        """
-        Reads a CSV file and returns its column names.
-
-        :param file_path: Path to the CSV file.
-        :return: List of column names in the CSV file.
-        """
         try:
             df = pd.read_csv(file_path)
             return list(df.columns)

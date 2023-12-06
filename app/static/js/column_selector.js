@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                     var option = new Option(column, column);
                                     columnSelect.add(option);
                                 });
+
+                                // Set 'processed_data' as selected if it exists
+                                var processedDataOption = Array.from(columnSelect.options).find(opt => opt.value === 'processed_data');
+                                if (processedDataOption) {
+                                    columnSelect.value = 'processed_data';
+                                }
                             }
                         }).catch(error => console.error('Fetch Error:', error));
                 }

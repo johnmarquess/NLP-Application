@@ -15,4 +15,4 @@ class ModelSelectionForm(FlaskForm):
 
 class ModelDataSelectionForm(FlaskForm):
     file = SelectField('Select File', validators=[DataRequired()])
-    column = SelectField('Select Column', validators=[DataRequired()], default='processed')
+    column = SelectField('Select Column', validators=[DataRequired()], default='processed_data')
