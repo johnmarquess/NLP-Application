@@ -91,7 +91,7 @@ class FileManagement:
             df = df[columns] if columns else df
             return df.head(5).to_html(classes=['table table-noto table-sm'], justify='left', index=False)
         except Exception as e:
-            pass
+            return f'An error occurred: {e}'
 
     @staticmethod
     def view_spreadsheet_contents(file_path, sheet_name):
