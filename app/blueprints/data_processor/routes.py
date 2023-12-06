@@ -85,17 +85,20 @@ def data_processing():
                 output_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], output_file)
 
                 if os.path.exists(output_path):
+                    print(f"File exists: {output_path}")
                     flash(f'File {output_file} already exists. Please choose a different name.', 'warning')
                 else:
                     try:
-                        save_message = file_manager.save_as_csv(df, output_file,
-                                                                current_app.config['PROCESSED_DATA_DIR'])
+                        print(f"About to save file at: {output_path}")
+
+                        save_message = file_manager.save_as_csv(df, output_file, 'PROCESSED_DATA_DIR')
+                        print(f"Save message: {save_message}")
                         flash(save_message, 'success')
                         # Generate table HTML from the saved file
                         table_html = file_manager.view_csv_contents(output_path)
                     except Exception as e:
                         flash(f'Failed to save file: {e}', 'error')
-
+                    print(f"File does not exist: {output_path}")
     return render_template('data_processing.html', model_form=model_form,
                            preprocess_form=preprocess_form, summary=summary, table_html=table_html)
 

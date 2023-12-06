@@ -17,20 +17,25 @@ class FileManagement:
     def allowed_file(self, filename):
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in self.allowed_extensions
 
-    def _get_directory(self, directory_type):
-        if directory_type == 'raw':
-            return self.raw_data_dir
-        elif directory_type == 'clean':
-            return self.clean_data_dir
-        elif directory_type == 'processed':
-            return self.processed_data_dir
-        else:
-            raise ValueError("Invalid directory type")
+    @staticmethod
+    def _get_directory(directory_type):
+        # Map directory types to their respective config paths
+        directory_mapping = {
+            'raw': current_app.config['RAW_DATA_DIR'],
+            'clean': current_app.config['CLEAN_DATA_DIR'],
+            'processed': current_app.config['PROCESSED_DATA_DIR']
+        }
+        return directory_mapping.get(directory_type)
 
-    def list_files(self, directory_type):
-        directory = self._get_directory(directory_type)
-        allowed_extensions = current_app.config['ALLOWED_EXTENSIONS']
-        return [f for f in os.listdir(directory) if f.split('.')[-1] in allowed_extensions]
+    def list_files(self, directory):
+        # Check if the directory is a type like 'raw' or 'clean'
+        if directory in ['raw', 'clean', 'processed']:
+            directory = self._get_directory(directory)
+
+        # Now proceed with the full directory path
+        if not os.path.exists(directory):
+            return []
+        return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
     def upload_file(self, file, directory_type='raw'):
         if not file:
@@ -109,10 +114,34 @@ class FileManagement:
         except Exception as e:
             return f'An error occurred: {e}', {}
 
-    def save_as_csv(self, df, filename, dir_path, encoding='utf-8'):
+    @staticmethod
+    def get_csv_columns(file_path):
+        """
+        Reads a CSV file and returns its column names.
+
+        :param file_path: Path to the CSV file.
+        :return: List of column names in the CSV file.
+        """
         try:
+            df = pd.read_csv(file_path)
+            return list(df.columns)
+        except Exception as e:
+            return f"Error reading file: {e}"
+
+    def save_as_csv(self, df, filename, directory_type, encoding='utf-8'):
+        try:
+            # Directly access the configuration
+            dir_path = current_app.config.get(directory_type)
+
+            # Debugging: Print the resolved directory path
+            print(f"Directory path resolved for {directory_type}: {dir_path}")
+
+            if dir_path is None:
+                return f"Error: Directory type '{directory_type}' resolved to None."
+
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
+
             file_path = os.path.join(dir_path, filename)
             df.to_csv(file_path, index=False, encoding=encoding)
             return f'File saved successfully: {file_path}'

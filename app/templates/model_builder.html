@@ -3,9 +3,9 @@
     <div class="container">
         <h2>Select NLP Modeling Approach</h2>
         <form method="post" class="form-horizontal">
-            {{ form.hidden_tag() }}
+            {{ model_form.hidden_tag() }}
             <div class="form-group d-flex align-items-center">
-                {% for subfield in form.model_type %}
+                {% for subfield in model_form.model_type %}
                     <div class="form-check form-check-inline">
                         {{ subfield(class="form-check-input") }}
                         {{ subfield.label(class="form-check-label") }}
@@ -13,9 +13,22 @@
                 {% endfor %}
             </div>
             <div class="form-group">
-                {{ form.submit(class="btn btn-primary") }}
+                <button type="submit" name="model_submit" class="btn btn-primary">Select Model</button>
             </div>
+        </form>
+
+        <h2>Select Data for Modeling</h2>
+        <form method="post">
+            {{ data_form.hidden_tag() }}
+            <div class="form-group">
+                <label for="file-select">Select File</label>
+                {{ data_form.file(class="form-select", id="file-select") }}
+            </div>
+            <div class="form-group">
+                <label for="column-select">Select Column</label>
+                {{ data_form.column(class="form-select", id="column-select") }}
+            </div>
+            <button type="submit" name="data_submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 {% endblock %}
-
