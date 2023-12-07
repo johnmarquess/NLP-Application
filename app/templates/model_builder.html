@@ -30,8 +30,8 @@
         <div class="container">
             <h2>Select NLP Modeling Approach</h2>
             <form method="post" id="model-selection-form">
-                {{ form.hidden_tag() }}
-                {% for subfield in form.model_type %}
+                {{ model_form.hidden_tag() }}
+                {% for subfield in model_form.model_type %}
                     <div class="form-check">
                         {{ subfield(onchange="submitForm()", class="form-check-input") }}
                         {{ subfield.label(class="form-check-label") }}
@@ -40,6 +40,14 @@
             </form>
         </div>
     </div>
+
+    {% if table_html %}
+        <div class="col-md-12 table-noto">
+            {{ table_html | safe }}
+        </div>
+    {% endif %}
+
+
 
     <script>
         function submitForm() {

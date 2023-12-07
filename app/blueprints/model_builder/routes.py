@@ -1,11 +1,10 @@
 import os
 
-from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, session
+from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, request
 
-from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm, TopicModelingForm
+from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm
 from app.modules.file_management import FileManagement
 
-import pandas as pd
 # Define the blueprint
 model_builder_bp = Blueprint('model_builder', __name__, template_folder='templates')
 
@@ -13,9 +12,10 @@ model_builder_bp = Blueprint('model_builder', __name__, template_folder='templat
 # Forms and routes will be defined here
 @model_builder_bp.route('/model-builder', methods=['GET', 'POST'])
 def model_builder():
-    form = ModelSelectionForm()
+    model_form = ModelSelectionForm()
     data_form = ModelDataSelectionForm()
     file_manager = FileManagement()
+    table_html = ""
 
     processed_data_dir = current_app.config['PROCESSED_DATA_DIR']
     processed_files = file_manager.list_files(processed_data_dir)
@@ -29,27 +29,32 @@ def model_builder():
         if 'processed_data' in columns:
             data_form.column.default = 'processed_data'
 
-    if form.validate_on_submit():
-        selected_model = form.model_type.data
-        selected_label = next((label for value, label in form.model_type.choices if value == selected_model), "Unknown")
+    if model_form.validate_on_submit():
+        selected_model = model_form.model_type.data
+        selected_label = next((label for value, label in model_form.model_type.choices if value == selected_model),
+                              "Unknown")
         flash(f'Modeling approach selected: {selected_label}', 'info')
 
-    if data_form.validate_on_submit():
+    if 'data_submit' in request.form and data_form.validate_on_submit():
         selected_file = data_form.file.data
-        session['selected_file'] = selected_file
+        all_columns_selected = data_form.all_columns.data
+        selected_columns = None if all_columns_selected else [data_form.column.data]
 
-        if data_form.all_columns.data:
-            # If 'Select All Columns' is checked
-            session['selected_columns'] = None  # Indicates all columns are selected
-        else:
-            # Specific column is selected
-            selected_column = data_form.column.data
-            session['selected_columns'] = [selected_column]  # Store as a list for consistency
+        # Load the data and generate the table HTML
+        try:
+            file_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], selected_file)
+            table_html = file_manager.view_csv_contents(file_path, selected_columns)
 
-        # Redirect to display data or another appropriate route
-        return redirect(url_for('model_builder.display_data'))
+            if 'An error occurred' in table_html:
+                flash(table_html, 'error')
+                # return redirect(url_for('model_builder.model_builder'))
 
-    return render_template('model_builder.html', form=form, data_form=data_form)
+        except Exception as e:
+            flash(f'Error: {e}', 'error')
+            return redirect(url_for('model_builder.model_builder'))
+
+    # Render the template with the table HTML
+    return render_template('model_builder.html', model_form=model_form, data_form=data_form, table_html=table_html)
 
 
 @model_builder_bp.route('/get-columns-model/<filename>')
@@ -61,52 +66,3 @@ def get_columns(filename):
         return jsonify(columns)
     except Exception as e:
         return jsonify({'error': str(e)})
-
-
-@model_builder_bp.route('/display-data')
-def display_data():
-    if 'selected_file' not in session:
-        flash('No file selected', 'warning')
-        return redirect(url_for('model_builder.model_builder'))
-
-    file_manager = FileManagement()
-    file_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], session['selected_file'])
-
-    try:
-        selected_columns = session.get('selected_columns', None)
-        table_html = file_manager.view_csv_contents(file_path, selected_columns)
-
-        if 'An error occurred' in table_html:
-            flash(table_html, 'error')
-            return redirect(url_for('model_builder.model_builder'))
-
-    except Exception as e:
-        flash(f'Error: {e}', 'error')
-        return redirect(url_for('model_builder.model_builder'))
-
-    return render_template('display_data.html', table_html=table_html)
-
-
-# @model_builder_bp.route('/topic-modeling', methods=['GET', 'POST'])
-# def topic_modeling():
-#     form = TopicModelingForm()
-#     if form.validate_on_submit():
-#         # Load processed data
-#         file_path =  # path to the processed data file
-#         df = pd.read_csv(file_path)
-#         docs = df['processed_data'].apply(lambda x: x.split())
-#
-#         # Create TopicModeling object
-#         topic_model = TopicModeling(docs,
-#                                     form.num_topics.data,
-#                                     form.random_state.data,
-#                                     form.chunksize.data,
-#                                     form.passes.data,
-#                                     tfidf_transform=form.tfidf_transform.data,
-#                                     per_word_topics=form.per_word_topics.data)
-#         topic_model.create_dictionary_corpus()
-#         lda_model = topic_model.build_model()
-#
-#         # Visualization and exporting (next steps)
-#
-#         return render_template('topic_modeller.html', form=form)
