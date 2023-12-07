@@ -28,7 +28,6 @@ def data_processing():
     preprocess_form = DataProcessingForm()
     preprocess_form.populate_file_choices()
     summary = {}
-    table_html = None
 
     if 'model_submit' in request.form and model_form.validate_on_submit():
         session['selected_model'] = model_form.model.data
@@ -95,12 +94,12 @@ def data_processing():
                         print(f"Save message: {save_message}")
                         flash(save_message, 'success')
                         # Generate table HTML from the saved file
-                        table_html = file_manager.view_csv_contents(output_path)
+
                     except Exception as e:
                         flash(f'Failed to save file: {e}', 'error')
                     print(f"File does not exist: {output_path}")
     return render_template('data_processing.html', model_form=model_form,
-                           preprocess_form=preprocess_form, summary=summary, table_html=table_html)
+                           preprocess_form=preprocess_form, summary=summary)
 
 
 @data_processor_bp.route('/load-model', methods=['POST'])

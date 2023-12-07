@@ -1,55 +1,62 @@
 {% extends 'base.html' %}
 {% block content %}
+
     <div class="container">
-
-        <div class="container">
-            <h2>Select NLP Modeling Approach</h2>
-            <form method="post" id="model-selection-form">
-                {{ form.hidden_tag() }}
-                {% for subfield in form.model_type %}
-                    <div class="form-check">
-                        {{ subfield(onchange="submitForm()", class="form-check-input") }}
-                        {{ subfield.label(class="form-check-label") }}
-                    </div>
-                {% endfor %}
-            </form>
-        </div>
-
-        <h2>Select Data for Modeling</h2>
+        <h1 class="mb-lg-5">Model building</h1>
+        <h3>Select Data for Modeling</h3>
         <form method="post">
             {{ data_form.hidden_tag() }}
-            <span id="columns-url" style="display:none;"
-                  data-url="{{ url_for('model_builder.get_columns', filename='') }}"></span>
-
-            <!-- Checkbox for Select All Columns -->
-            <div class="form-check">
-                {{ data_form.all_columns(id="model-builder-all-columns-check", class="form-check-input") }}
-                <label class="form-check-label" for="model-builder-all-columns-check">
-                    Select All Columns
-                </label>
-            </div>
-
+            <span id="columns-url" style="display:none;" data-url="{{ url_for('model_builder.get_columns', filename='') }}"></span>
 
             <!-- File Selector -->
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="file-select">Select File</label>
                 {{ data_form.file(class="form-select", id='model-builder-file-select') }}
             </div>
 
             <!-- Column Selector -->
-            <div class="form-group">
+            <div class="form-group mb-3">
                 <label for="column-select">Select Column</label>
                 {{ data_form.column(class="form-select", id='model-builder-column-select') }}
             </div>
 
-            <button type="submit" name="data_submit" class="btn btn-primary">Submit</button>
+            <!-- Checkbox for Select All Columns -->
+            <div class="form-check mb-3">
+                {{ data_form.all_columns(id="model-builder-all-columns-check", class="form-check-input") }}
+                <label class="form-check-label" for="model-builder-all-columns-check">Select All Columns</label>
+            </div>
+
+            <button type="submit" name="data_submit" class="btn btn-outline-primary btn-sm mb-5">Submit</button>
         </form>
+
+
+            <h3>Select NLP Modeling Approach</h3>
+        <form method="post" id="model-selection-form" class="d-flex justify-content-start">
+            {{ model_form.hidden_tag() }}
+            {% for subfield in model_form.model_type %}
+                <div class="form-check form-check-inline">
+                    {{ subfield(onchange="submitForm()", class="form-check-input") }}
+                    {{ subfield.label(class="form-check-label") }}
+                </div>
+            {% endfor %}
+        </form>
+
     </div>
+
+    {% if table_html %}
+        <h3 class="mt-lg-5">Preview of data to model.</h3>
+        <h5>This is what you are going to model.</h5>
+        <p><span style="color:#dc3545; font-weight: bold">Note! </span>If you see any columns other than <code>processed_data</code> you might want to reselect a column above.</p>
+        <div class="col-md-12 ">
+            {{ table_html | safe }}
+        </div>
+    {% endif %}
+
+
+
     <script>
         function submitForm() {
             document.getElementById('model-selection-form').submit();
         }
     </script>
 {% endblock %}
-
-
