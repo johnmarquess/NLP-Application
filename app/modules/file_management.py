@@ -122,7 +122,8 @@ class FileManagement:
         except Exception as e:
             return f"Error reading file: {e}"
 
-    def save_as_csv(self, df, filename, directory_type, encoding='utf-8'):
+    @staticmethod
+    def save_as_csv(df, filename, directory_type, encoding='utf-8'):
         try:
             # Directly access the configuration
             dir_path = current_app.config.get(directory_type)
