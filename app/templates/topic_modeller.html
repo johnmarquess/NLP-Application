@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h2>Topic Modeling Configuration</h2>
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <!-- Display form fields here -->
+            {% for field in form %}
+                <div class="form-group">
+                    {{ field.label }}
+                    {{ field(class="form-control") }}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">Run Model</button>
+        </form>
+
+        {% if lda_topics_html %}
+            <div>
+                <h3>Model Output</h3>
+                {{ lda_topics_html|safe }}
+            </div>
+        {% endif %}
+    </div>
+
+
+
+
+    {% for field in form %}
+        {{ field.errors }}
+    {% endfor %}
+
+{% endblock %}

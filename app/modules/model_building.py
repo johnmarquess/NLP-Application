@@ -2,7 +2,7 @@ from gensim import corpora
 from gensim.models import TfidfModel, LdaModel
 
 
-class TopicModeling:
+class TopicModelling:
     def __init__(self, docs, num_topics, random_state, chunksize, passes, tfidf_transform=False, per_word_topics=True):
         self.docs = docs
         self.num_topics = num_topics
