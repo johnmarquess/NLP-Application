@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for
+from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, session
 
 from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm
 from app.modules.file_management import FileManagement
@@ -35,20 +35,18 @@ def model_builder():
 
     if data_form.validate_on_submit():
         selected_file = data_form.file.data
-        all_columns_selected = data_form.all_columns.data
+        session['selected_file'] = selected_file
+
         if data_form.all_columns.data:
-            # Logic when 'Select All Columns' is checked
-            pass
+            # If 'Select All Columns' is checked
+            session['selected_columns'] = None  # Indicates all columns are selected
         else:
+            # Specific column is selected
             selected_column = data_form.column.data
-            # Logic for a specific column
-            pass
+            session['selected_columns'] = [selected_column]  # Store as a list for consistency
 
-        # Reflect the checkbox state for the next render
-        data_form.all_columns.data = all_columns_selected
-
-        # Redirect or render template based on the action taken
-        return redirect(url_for('some_next_step'))
+        # Redirect to display data or another appropriate route
+        return redirect(url_for('model_builder.display_data'))
 
     return render_template('model_builder.html', form=form, data_form=data_form)
 
@@ -62,3 +60,27 @@ def get_columns(filename):
         return jsonify(columns)
     except Exception as e:
         return jsonify({'error': str(e)})
+
+
+@model_builder_bp.route('/display-data')
+def display_data():
+    if 'selected_file' not in session:
+        flash('No file selected', 'warning')
+        return redirect(url_for('model_builder.model_builder'))
+
+    file_manager = FileManagement()
+    file_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], session['selected_file'])
+
+    try:
+        selected_columns = session.get('selected_columns', None)
+        table_html = file_manager.view_csv_contents(file_path, selected_columns)
+
+        if 'An error occurred' in table_html:
+            flash(table_html, 'error')
+            return redirect(url_for('model_builder.model_builder'))
+
+    except Exception as e:
+        flash(f'Error: {e}', 'error')
+        return redirect(url_for('model_builder.model_builder'))
+
+    return render_template('display_data.html', table_html=table_html)
