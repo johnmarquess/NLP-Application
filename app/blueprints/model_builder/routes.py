@@ -2,9 +2,10 @@ import os
 
 from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, session
 
-from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm
+from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm, TopicModelingForm
 from app.modules.file_management import FileManagement
 
+import pandas as pd
 # Define the blueprint
 model_builder_bp = Blueprint('model_builder', __name__, template_folder='templates')
 
@@ -84,3 +85,28 @@ def display_data():
         return redirect(url_for('model_builder.model_builder'))
 
     return render_template('display_data.html', table_html=table_html)
+
+
+# @model_builder_bp.route('/topic-modeling', methods=['GET', 'POST'])
+# def topic_modeling():
+#     form = TopicModelingForm()
+#     if form.validate_on_submit():
+#         # Load processed data
+#         file_path =  # path to the processed data file
+#         df = pd.read_csv(file_path)
+#         docs = df['processed_data'].apply(lambda x: x.split())
+#
+#         # Create TopicModeling object
+#         topic_model = TopicModeling(docs,
+#                                     form.num_topics.data,
+#                                     form.random_state.data,
+#                                     form.chunksize.data,
+#                                     form.passes.data,
+#                                     tfidf_transform=form.tfidf_transform.data,
+#                                     per_word_topics=form.per_word_topics.data)
+#         topic_model.create_dictionary_corpus()
+#         lda_model = topic_model.build_model()
+#
+#         # Visualization and exporting (next steps)
+#
+#         return render_template('topic_modeller.html', form=form)
