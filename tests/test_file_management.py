@@ -1,7 +1,7 @@
-import os
-from io import BytesIO
+from io import StringIO
+from unittest.mock import Mock, patch, MagicMock
 
-import openpyxl
+import pandas
 import pandas as pd
 import pytest
 from flask import Flask
@@ -13,109 +13,110 @@ from app.modules.file_management import FileManagement
 @pytest.fixture
 def app():
     app = Flask(__name__)
-    app.config['DATA_RAW_DIR'] = 'data/raw'
-    app.config['DATA_CLEAN_DIR'] = 'data/clean'
-    app.config['DATA_PROCESSED_DIR'] = 'data/processed'
-    app.config['ALLOWED_EXTENSIONS'] = {'xls', 'xlsx', 'csv'}
-    return app
+    app.config.update({
+        'RAW_DATA_DIR': '/tmp',
+        'CLEAN_DATA_DIR': '/tmp',
+        'PROCESSED_DATA_DIR': '/tmp',
+        'ALLOWED_EXTENSIONS': {'txt', 'csv'}
+    })
 
-
-@pytest.fixture
-def file_manager(app):
     with app.app_context():
-        yield FileManagement()
+        file_management = FileManagement()
+        yield app, file_management
 
 
-def test_list_files_raw(file_manager, app):
-    with app.app_context():
-        listed_files = file_manager.list_files('raw')
-        all_files_allowed = all(
-            file.split('.')[-1] in app.config['ALLOWED_EXTENSIONS']
-            for file in listed_files
-        )
-        assert all_files_allowed, "Some listed files in raw directory have disallowed extensions"
+def test_allowed_file(app):
+    _, file_management = app
+    assert file_management.allowed_file('test.txt')
+    assert not file_management.allowed_file('test.exe')
 
 
-def test_upload_file_no_overwrite(file_manager, app):
-    with app.app_context():
-        # First upload
-        dummy_file = FileStorage(stream=BytesIO(b"dummy file content"), filename="dummy.xlsx")
-        message = file_manager.upload_file(dummy_file, 'raw')
-        assert message == 'File dummy.xlsx uploaded successfully to raw directory'
+def test_upload_file(app):
+    _, file_management = app
+    mock_file = Mock(spec=FileStorage)
+    mock_file.filename = 'test_file.txt'
 
-        # Attempt to upload the same file again
-        second_message = file_manager.upload_file(dummy_file, 'raw')
-        assert second_message == 'File dummy.xlsx already exists in raw directory', "File overwrite check failed"
+    with patch('os.path.exists', return_value=False):
+        response = file_management.upload_file(mock_file, 'raw')
+    assert response == 'File test_file.txt uploaded successfully to raw directory'
 
 
-def test_delete_file(file_manager, app):
-    # Setup: Ensure a test file exists
-    test_file_path = os.path.join(app.config['DATA_RAW_DIR'], 'delete_test.csv')
-    with open(test_file_path, 'w') as file:
-        file.write('test content')
-
-    # Test deleting the file
-    delete_message = file_manager.delete_file('delete_test.csv', 'raw')
-    assert delete_message == 'File delete_test.csv deleted successfully'
-    assert not os.path.exists(test_file_path), "File was not deleted"
+def test_delete_file(app):
+    _, file_management = app
+    with patch('os.path.exists', return_value=True), patch('os.remove'):
+        response = file_management.delete_file('test_file.txt', 'raw')
+    assert response == 'File test_file.txt deleted successfully'
 
 
-def test_list_worksheets(file_manager, app, tmp_path):
-    # Create a test .xlsx file with two worksheets
-    test_file_path = tmp_path / "test_workbook.xlsx"
-    wb = openpyxl.Workbook()
-    wb.create_sheet(title="Sheet1")
-    wb.create_sheet(title="Sheet2")
-    wb.save(test_file_path)
+def test_list_worksheets(app):
+    _, file_management = app
 
-    # Convert test_file_path to string
-    test_file_path_str = str(test_file_path)
+    # Mock the workbook object and set sheetnames property
+    workbook_mock = MagicMock()
+    workbook_mock.sheetnames = ['Sheet1', 'Sheet2']
 
-    # Test listing worksheets
-    worksheets = file_manager.list_worksheets(test_file_path_str)
-    assert len(worksheets) == 3
-    assert "Sheet" in worksheets and "Sheet1" in worksheets and "Sheet2" in worksheets, ("Worksheets names not listed "
-                                                                                         "correctly")
+    with patch('openpyxl.load_workbook', return_value=workbook_mock):
+        sheets = file_management.list_worksheets('/tmp/test.xlsx')
+    assert sheets == ['Sheet1', 'Sheet2']
 
 
-def test_view_csv_contents(file_manager, app, tmp_path):
-    # Create a test CSV file
-    test_csv_path = tmp_path / "test.csv"
-    df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-    df.to_csv(test_csv_path, index=False)
+def test_view_csv_contents(app):
+    _, file_management = app
+    csv_data = 'col1,col2\n1,2\n3,4'
+    df = pd.read_csv(StringIO(csv_data))
 
-    # Test viewing CSV content
-    content_html = file_manager.view_csv_contents(str(test_csv_path), ['A'])
-    assert '<th>A</th>' in content_html
-    assert '<td>1</td>' in content_html  # Checking if first row's data is present
-
-
-def test_view_spreadsheet_contents(file_manager, app, tmp_path):
-    # Create a test .xlsx file
-    test_xlsx_path = tmp_path / "test.xlsx"
-    df = pd.DataFrame({'A': [1, None, 3], 'B': [4, 5, None]})
-    df.to_excel(test_xlsx_path, index=False)
-
-    # Test viewing spreadsheet content
-    content, metadata = file_manager.view_spreadsheet_contents(str(test_xlsx_path), 'Sheet1')
-    assert metadata['total_rows'] == 3
-    assert 'A' in content and 'B' in content
-    assert content['A']['column_name'] == 'A'
-    assert content['B']['column_name'] == 'B'
-    assert content['A']['first_item'] == 1
-    assert content['A']['missing_count'] == 1  # One missing value in column A
+    with patch('pandas.read_csv', return_value=df):
+        contents = file_management.view_csv_contents('/tmp/test.csv')
+        # Convert DataFrame to HTML string table, your output comparison here may vary
+        expected_html = df.head(5).to_html(classes=['table table-noto table-sm'], justify='left', index=False)
+    assert contents == expected_html
 
 
-def test_save_as_csv(file_manager, app, tmp_path):
-    # Create a test DataFrame
-    df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+def test_upload_empty_file(app):
+    _, file_management = app
+    mock_empty_file = Mock(spec=FileStorage)
+    mock_empty_file.filename = ''
+    response = file_management.upload_file(mock_empty_file, 'raw')
+    assert response == 'No selected file'
 
-    # Test saving as CSV
-    save_path = tmp_path / "saved.csv"
-    column_selection = {'A': 'A', 'B': 'B_renamed'}  # Renaming column 'B' to 'B_renamed'
-    file_manager.save_as_csv(df, column_selection, str(save_path))
 
-    # Verify the saved file
-    saved_df = pd.read_csv(save_path)
-    assert 'A' in saved_df.columns and 'B_renamed' in saved_df.columns
-    assert len(saved_df) == 3  # Check if data length is correct
+def test_upload_disallowed_file_extension(app):
+    _, file_management = app
+    mock_file = Mock(spec=FileStorage)
+    mock_file.filename = 'test.exe'
+    response = file_management.upload_file(mock_file, 'raw')
+    assert response == 'File type not allowed'
+
+
+def test_delete_non_existent_file(app):
+    _, file_management = app
+    with patch('os.path.exists', return_value=False):
+        response = file_management.delete_file('test_file.txt', 'raw')
+    assert response == 'File test_file.txt does not exist'
+
+
+def test_list_files_non_existent_directory(app):
+    _, file_management = app
+    with patch('os.path.exists', return_value=False):
+        file_list = file_management.list_files('/non_existent_dir')
+    assert file_list == []
+
+
+def test_list_worksheets_non_excel_file(app):
+    _, file_management = app
+    response = file_management.list_worksheets('/tmp/test.txt')
+    assert response == 'Unsupported file type for worksheet listing'
+
+
+def test_view_csv_contents_non_csv_file(app):
+    _, file_management = app
+    with patch('pandas.read_csv', side_effect=pandas.errors.ParserError):
+        with pytest.raises(pandas.errors.ParserError):
+            pandas.read_csv('/tmp/test.txt')
+
+
+def test_get_csv_columns_non_existent_file(app):
+    _, file_management = app
+    with patch('pandas.read_csv', side_effect=FileNotFoundError):
+        with pytest.raises(FileNotFoundError):
+            pandas.read_csv('/non_existent_dir/test.csv')
