@@ -1,21 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-        <h2>Select NLP Modeling Approach</h2>
-        <form method="post" class="form-horizontal">
-            {{ model_form.hidden_tag() }}
-            <div class="form-group d-flex align-items-center">
-                {% for subfield in model_form.model_type %}
-                    <div class="form-check form-check-inline">
-                        {{ subfield(class="form-check-input") }}
+    <div class="container">
+        <div class="container">
+            <h2>Select NLP Modeling Approach</h2>
+            <form method="post" id="model-selection-form">
+                {{ form.hidden_tag() }}
+                {% for subfield in form.model_type %}
+                    <div class="form-check">
+                        {{ subfield(onchange="submitForm()", class="form-check-input") }}
                         {{ subfield.label(class="form-check-label") }}
                     </div>
                 {% endfor %}
-            </div>
-            <div class="form-group">
-                <button type="submit" name="model_submit" class="btn btn-primary">Select Model</button>
-            </div>
-        </form>
+            </form>
+        </div>
 
         <h2>Select Data for Modeling</h2>
         <form method="post">
@@ -35,5 +33,16 @@
             <button type="submit" name="data_submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+
+
+    {#Put Javascript here#}
+    <script>
+        function submitForm() {
+            document.getElementById('model-selection-form').submit();
+        }
+    </script>
+
+
 {% endblock %}
+
 

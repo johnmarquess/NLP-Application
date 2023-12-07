@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, render_template, jsonify, request, current_app
+from flask import Blueprint, render_template, jsonify, request, current_app, flash
 
 from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm
 from app.modules.file_management import FileManagement
@@ -12,7 +12,7 @@ model_builder_bp = Blueprint('model_builder', __name__, template_folder='templat
 # Forms and routes will be defined here
 @model_builder_bp.route('/model-builder', methods=['GET', 'POST'])
 def model_builder():
-    model_form = ModelSelectionForm()
+    form = ModelSelectionForm()
     data_form = ModelDataSelectionForm()
     file_manager = FileManagement()
 
@@ -28,14 +28,16 @@ def model_builder():
         if 'processed_data' in columns:
             data_form.column.default = 'processed_data'
 
-    if 'model_submit' in request.form and model_form.validate_on_submit():
-        # Handle model form submission
-        pass
-    elif 'data_submit' in request.form and data_form.validate_on_submit():
+    if form.validate_on_submit():
+        selected_model = form.model_type.data
+        selected_label = next((label for value, label in form.model_type.choices if value == selected_model), "Unknown")
+        flash(f'Modeling approach selected: {selected_label}', 'info')
+
+    if 'data_submit' in request.form and data_form.validate_on_submit():
         # Handle data form submission
         pass
 
-    return render_template('model_builder.html', model_form=model_form, data_form=data_form)
+    return render_template('model_builder.html', form=form, data_form=data_form)
 
 
 @model_builder_bp.route('/get-columns-model/<filename>')
