@@ -1,6 +1,6 @@
 import os
 
-from flask import Blueprint, render_template, jsonify, request, current_app, flash
+from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for
 
 from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm
 from app.modules.file_management import FileManagement
@@ -33,9 +33,22 @@ def model_builder():
         selected_label = next((label for value, label in form.model_type.choices if value == selected_model), "Unknown")
         flash(f'Modeling approach selected: {selected_label}', 'info')
 
-    if 'data_submit' in request.form and data_form.validate_on_submit():
-        # Handle data form submission
-        pass
+    if data_form.validate_on_submit():
+        selected_file = data_form.file.data
+        all_columns_selected = data_form.all_columns.data
+        if data_form.all_columns.data:
+            # Logic when 'Select All Columns' is checked
+            pass
+        else:
+            selected_column = data_form.column.data
+            # Logic for a specific column
+            pass
+
+        # Reflect the checkbox state for the next render
+        data_form.all_columns.data = all_columns_selected
+
+        # Redirect or render template based on the action taken
+        return redirect(url_for('some_next_step'))
 
     return render_template('model_builder.html', form=form, data_form=data_form)
 

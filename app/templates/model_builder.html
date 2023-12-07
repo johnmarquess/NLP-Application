@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-    <div class="container">
+
         <div class="container">
             <h2>Select NLP Modeling Approach</h2>
             <form method="post" id="model-selection-form">
@@ -18,31 +18,38 @@
         <h2>Select Data for Modeling</h2>
         <form method="post">
             {{ data_form.hidden_tag() }}
-
             <span id="columns-url" style="display:none;"
                   data-url="{{ url_for('model_builder.get_columns', filename='') }}"></span>
 
+            <!-- Checkbox for Select All Columns -->
+            <div class="form-check">
+                {{ data_form.all_columns(id="model-builder-all-columns-check", class="form-check-input") }}
+                <label class="form-check-label" for="model-builder-all-columns-check">
+                    Select All Columns
+                </label>
+            </div>
+
+
+            <!-- File Selector -->
             <div class="form-group">
                 <label for="file-select">Select File</label>
                 {{ data_form.file(class="form-select", id='model-builder-file-select') }}
             </div>
+
+            <!-- Column Selector -->
             <div class="form-group">
                 <label for="column-select">Select Column</label>
                 {{ data_form.column(class="form-select", id='model-builder-column-select') }}
             </div>
+
             <button type="submit" name="data_submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
-
-
-    {#Put Javascript here#}
     <script>
         function submitForm() {
             document.getElementById('model-selection-form').submit();
         }
     </script>
-
-
 {% endblock %}
 
 

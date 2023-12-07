@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, SubmitField, RadioField
+from wtforms import SelectField, SubmitField, RadioField, BooleanField
 from wtforms.validators import DataRequired
 
 
@@ -16,4 +16,6 @@ class ModelSelectionForm(FlaskForm):
 
 class ModelDataSelectionForm(FlaskForm):
     file = SelectField('Select File', validators=[DataRequired()])
-    column = SelectField('Select Column', validators=[DataRequired()], default='processed_data')
+    column = SelectField('Select Column')
+    all_columns = BooleanField('Select All Columns')
+    submit = SubmitField('Submit')
