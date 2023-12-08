@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired
 from wtforms import SubmitField, RadioField, SelectField, HiddenField
-from wtforms.validators import Optional
 
 
 class FileUploadForm(FlaskForm):
@@ -19,4 +18,3 @@ class LoadSpreadsheetForm(FlaskForm):
 class CleanDataForm(FlaskForm):
     file_choice = RadioField('Select File', choices=[], coerce=str)
     submit = SubmitField('View File')  # No need to set 'name' here
-
