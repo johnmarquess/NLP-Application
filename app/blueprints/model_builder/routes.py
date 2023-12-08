@@ -131,7 +131,10 @@ def topic_modeller():
                                            form.chunksize.data,
                                            form.passes.data,
                                            form.tfidf_transform.data,
-                                           form.per_word_topics.data)
+                                           form.per_word_topics.data,
+                                           no_below=form.no_below.data,
+                                           no_above=form.no_above.data,
+                                           keep_n=form.keep_n.data)
 
             topic_modeler.create_dictionary_corpus()
             lda_model = topic_modeler.build_model()
@@ -147,7 +150,8 @@ def topic_modeller():
             # Convert topics data to a DataFrame and then to HTML for display
             topics_df = pd.DataFrame(topics_data)
             print(topics_df)
-            lda_topics_html = topics_df.to_html(classes=['table', 'table-striped'], index=False)
+            lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
+                                                index=False)
 
             # Visualization and saving visualization logic goes here
 

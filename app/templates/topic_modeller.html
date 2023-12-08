@@ -3,10 +3,21 @@
     <div class="container">
     <div class="row">
     <h1 class="mb-lg-5">Topic modeller parameter settings and results</h1>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <h3>Topic Modeling Configuration</h3>
             <form method="post">
                 {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.no_below.label }} {{ form.no_below(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.no_above.label }} {{ form.no_above(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.keep_n.label }} {{ form.keep_n(class="form-control") }}
+                </div>
+
+
                 <div class="form-group form-switch mb-lg-3">
                     {{ form.tfidf_transform(class="form-check-input") }}
                     {{ form.tfidf_transform.label }}
@@ -35,8 +46,8 @@
         </div>
 
 
-        <div class="col-md-6">
-            <h3 class="mb-lg-5">Model Output</h3>
+        <div class="col-md-8">
+            <h3 class="mb-lg-5">Model Output (on completion).</h3>
             {% if lda_topics_html %}
                 <div>
 

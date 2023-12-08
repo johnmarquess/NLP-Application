@@ -20,6 +20,9 @@ h1, h2, h3, h4, h5, h6, p {
 
 }
 
+.table-roboto {
+    font-family: 'Roboto', sans-serif;
+}
 
 .navbar {
     border-bottom: 2px solid rgba(13, 109, 251, 0.6);
