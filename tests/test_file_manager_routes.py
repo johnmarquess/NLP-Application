@@ -71,3 +71,5 @@ def test_delete_file(client):
     rv = client.post('/delete-file/raw', data={"file": "test_file.txt"})
     print(rv.data)  # print the response to inspect its content
     assert rv.status_code == 302
+
+

@@ -44,6 +44,7 @@
                     {{ form.visualization_name(class="form-control", placeholder="Enter a name for the pyLDAviz output") }}
                 </div>
                 <button type="submit" class="btn btn-outline-primary btn-sm">Run Model</button>
+
             </form>
         </div>
 
@@ -67,6 +68,15 @@
                     </li>
                     <li></li>
                 </ul>
+
+                {% if session.last_visualization_name %}
+                    <a href="{{ url_for('model_builder.model_view', visualization_name=session.last_visualization_name) }}"
+                       class="btn btn-secondary">
+                        View Model Visualization
+                    </a>
+                {% endif %}
+
+
             </div>
 
 
