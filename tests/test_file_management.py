@@ -120,3 +120,13 @@ def test_get_csv_columns_non_existent_file(app):
     with patch('pandas.read_csv', side_effect=FileNotFoundError):
         with pytest.raises(FileNotFoundError):
             pandas.read_csv('/non_existent_dir/test.csv')
+
+
+def test_get_csv_columns(app):
+    _, file_management = app
+    csv_data = 'col1,col2\n1,2\n3,4'
+    df = pd.read_csv(StringIO(csv_data))
+
+    with patch('pandas.read_csv', return_value=df):
+        columns = file_management.get_csv_columns('/tmp/test.csv')
+    assert columns == ['col1', 'col2']

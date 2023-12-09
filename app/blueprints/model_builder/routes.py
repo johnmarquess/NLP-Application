@@ -1,7 +1,10 @@
 import os
 
 import pandas as pd
-from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, request, session
+import pyLDAvis
+import pyLDAvis.gensim_models as gensimvis
+from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, request, session, \
+    send_from_directory
 
 from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm, TopicModellingForm
 from app.modules.file_management import FileManagement
@@ -154,6 +157,14 @@ def topic_modeller():
                                                 index=False)
 
             # Visualization and saving visualization logic goes here
+            # pyLDAvis.enable_notebook()
+            vis = gensimvis.prepare(lda_model, topic_modeler.corpus, topic_modeler.dictionary)
+
+            # Save visualization
+            visualization_name = form.visualization_name.data
+            output_path = os.path.join(current_app.config['MODELS_DIR'], f"{visualization_name}.html")
+            pyLDAvis.save_html(vis, output_path)
+            session['last_visualization_name'] = visualization_name
 
             flash("Topic model built successfully.", "success")
 
@@ -163,3 +174,14 @@ def topic_modeller():
     print("LDA Topics HTML:", lda_topics_html)
     # Render the template with the form and optional table
     return render_template('topic_modeller.html', form=form, lda_topics_html=lda_topics_html, lda_model=lda_model)
+
+
+@model_builder_bp.route('/model-view/<visualization_name>')
+def model_view(visualization_name):
+    visualization_file = f"{visualization_name}.html"
+    return render_template('model_view.html', visualization_file=visualization_file)
+
+
+@model_builder_bp.route('/model-output/<filename>')
+def model_output(filename):
+    return send_from_directory(current_app.config['MODELS_DIR'], filename)

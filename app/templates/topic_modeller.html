@@ -2,13 +2,15 @@
 {% block content %}
     <div class="container">
     <div class="row">
-    <h1 class="mb-lg-5">Topic modeller parameter settings and results</h1>
+        <h1 class="mb-lg-5">Topic modeller parameter settings and results</h1>
         <div class="col-md-4">
             <h3>Topic Modeling Configuration</h3>
+            <h4 class="mt-lg-4">Filter extreme values</h4>
             <form method="post">
                 {{ form.hidden_tag() }}
                 <div class="form-group">
-                    {{ form.no_below.label }} {{ form.no_below(class="form-control") }}
+                    {{ form.no_below(class="form-control", placeholder="Number below") }}
+                    Number below:
                 </div>
                 <div class="form-group">
                     {{ form.no_above.label }} {{ form.no_above(class="form-control") }}
@@ -42,20 +44,54 @@
                     {{ form.visualization_name(class="form-control", placeholder="Enter a name for the pyLDAviz output") }}
                 </div>
                 <button type="submit" class="btn btn-outline-primary btn-sm">Run Model</button>
+
             </form>
         </div>
 
 
         <div class="col-md-8">
-            <h3 class="mb-lg-5">Model Output (on completion).</h3>
+            <h3 class="mb-lg-4">Some basic concepts</h3>
+
+            <div class="mt-lg-5">
+                <ul>
+                    <li>Token − A token means a ‘word’.</li>
+                    <li>Document − A document refers to a sentence or paragraph.</li>
+                    <li>Corpus − It refers to a collection of documents as a bag of words (BoW).</li>
+                    <li>For all the documents, a corpus always contains each word’s token’s id along with its frequency
+                        count in the document.
+                    </li>
+                    <h5>Filter extreme values</h5>
+                    <li>Number below (no_below) means Keep tokens which are contained in at least no_below documents.
+                    </li>
+                    <li>Number above (no_above) means Keep the <strong>proportion</strong> of tokens contained in no
+                        more than no_above% documents.
+                    </li>
+                    <li></li>
+                </ul>
+
+                {% if session.last_visualization_name %}
+                    <a href="{{ url_for('model_builder.model_view', visualization_name=session.last_visualization_name) }}"
+                       class="btn btn-secondary">
+                        View Model Visualization
+                    </a>
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+        <div class="container">
+            <h3 class="mb-lg-4">Model Output (on completion).</h3>
             {% if lda_topics_html %}
                 <div>
-
                     {{ lda_topics_html|safe }}
                 </div>
             {% endif %}
 
         </div>
+
 
     </div>
 
