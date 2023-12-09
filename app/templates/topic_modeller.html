@@ -63,7 +63,7 @@
                             more than no_above% documents.
                         </li>
                     </ul>
-                <h5>Other instructions</h5>
+                    <h5>Other instructions</h5>
                     <ul>
                         <li>Token − A token means a ‘word’.</li>
                         <li>Document − A document refers to a sentence or paragraph.</li>
@@ -88,17 +88,38 @@
 
 
             </div>
+            {## TODO: Add this back in when we have a way to display the model output#}
+            {#            <div class="container">#}
+            {#                <h3 class="mb-lg-4">Model Output (on completion).</h3>#}
+            {#                {% if lda_topics_html %}#}
+            {#                    <div>#}
+            {#                        {{ lda_topics_html|safe }}#}
+            {#                    </div>#}
+            {#                {% endif %}#}
+            {##}
+            {#            </div>#}
 
-            <div class="container">
-                <h3 class="mb-lg-4">Model Output (on completion).</h3>
-                {% if lda_topics_html %}
-                    <div>
-                        {{ lda_topics_html|safe }}
-                    </div>
+            <div>
+                <!-- ... [Other parts of your template] -->
+
+                {% if topic_label_form %}
+                    <form method="POST">
+                        {{ topic_label_form.hidden_tag() }}
+                        {% set num_topics = form.num_topics.data or 0 %}
+                        {% for topic_num in range(1, num_topics + 1) %}
+                            <div class="form-group">
+                                <label for="topic_{{ topic_num }}_label">Label for Topic {{ topic_num }}</label>
+                                {{ topic_label_form['topic_' ~ topic_num ~ '_label']() }}
+                            </div>
+                        {% endfor %}
+                        <div class="form-group">
+                            {{ topic_label_form.save_name() }}
+                        </div>
+                        {{ topic_label_form.submit() }}
+                    </form>
                 {% endif %}
 
             </div>
-
 
         </div>
     </div>

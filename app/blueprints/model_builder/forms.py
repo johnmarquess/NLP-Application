@@ -23,6 +23,13 @@ class ModelDataSelectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+class TopicLabelForm(FlaskForm):
+    # Dynamic fields will be added in the route
+
+    save_name = StringField('Save File As', validators=[DataRequired()])
+    submit = SubmitField('Apply Labels and Save')
+
+
 class TopicModellingForm(FlaskForm):
     tfidf_transform = BooleanField("TF-IDF Transformation")
     num_topics = StringField("Number of Topics", validators=[DataRequired()])

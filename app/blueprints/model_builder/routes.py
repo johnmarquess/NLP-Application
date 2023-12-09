@@ -5,8 +5,10 @@ import pyLDAvis
 import pyLDAvis.gensim_models as gensimvis
 from flask import Blueprint, render_template, jsonify, current_app, flash, redirect, url_for, request, session, \
     send_from_directory
+from wtforms.fields.simple import StringField
 
-from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm, TopicModellingForm
+from app.blueprints.model_builder.forms import ModelSelectionForm, ModelDataSelectionForm, TopicModellingForm, \
+    TopicLabelForm
 from app.modules.file_management import FileManagement
 from app.modules.model_building import TopicModelling
 
@@ -124,7 +126,8 @@ def get_columns(filename):
 @model_builder_bp.route('/topic-modeller', methods=['GET', 'POST'])
 def topic_modeller():
     form = TopicModellingForm()
-    lda_topics_html = ""  # Initialize variable here
+    file_manager = FileManagement()
+    topic_label_form = TopicLabelForm()  # Initialize variable here
     lda_model = None
 
     if 'dataframe_file_path' in session:
@@ -153,17 +156,42 @@ def topic_modeller():
 
             # After building the model, extract top words for each topic
             topics = lda_model.show_topics(num_topics=form.num_topics.data, num_words=10, formatted=False)
-            topics_data = []
+            # TODO: Remove this?
+            # topics_data = []
 
-            for topic_num, topic in topics:
-                topic_words = ", ".join([word for word, _ in topic])
-                topics_data.append({'Topic Number': topic_num + 1, 'Top Words': topic_words})
+            topics = lda_model.show_topics(num_topics=form.num_topics.data, num_words=10, formatted=False)
+            for topic_num, topic_words in topics:
+                label_field_name = f'topic_{topic_num}_label'
+                setattr(topic_label_form, label_field_name, StringField(f'Topic {topic_num + 1}'))
+                topic_label_form[label_field_name].label = topic_words
 
+            # TODO: This is all lda_topics_html related. Remove completely if form works.
             # Convert topics data to a DataFrame and then to HTML for display
-            topics_df = pd.DataFrame(topics_data)
+            # topics_df = pd.DataFrame(topics_data)
 
-            lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
-                                                index=False)
+            # lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
+            #                                     index=False)
+
+            if 'topic_label_form' in session and session['topic_label_form'].validate_on_submit():
+                topic_label_form = session['topic_label_form']
+
+                # Apply labels to DataFrame
+                for topic_num in range(1, form.num_topics.data + 1):
+                    label = getattr(topic_label_form, f'topic_{topic_num}_label').data
+                    # Assume df has a 'topic' column with topic numbers
+                    df.loc[df['topic'] == topic_num, 'topic_label'] = label
+
+                    # Save DataFrame
+                    save_name = topic_label_form.save_name.data
+                    file_manager.save_as_csv(df, f'{save_name}.csv', 'LABELLED_DATA_DIR')
+
+                    # Clear the form from the session
+                    del session['topic_label_form']
+                    flash('Data saved with topic labels.', 'success')
+
+                    # Clear the form from the session
+                    del session['topic_label_form']
+                    flash('Data saved with topic labels.', 'success')
 
             # Visualization and saving visualization logic goes here
             # pyLDAvis.enable_notebook()
@@ -181,7 +209,7 @@ def topic_modeller():
         flash("No data file selected for topic modeling.", "warning")
         return redirect(url_for('model_builder.model_builder'))
     # Render the template with the form and optional table
-    return render_template('topic_modeller.html', form=form, lda_topics_html=lda_topics_html, lda_model=lda_model)
+    return render_template('topic_modeller.html', form=form, topic_label_form=topic_label_form, lda_model=lda_model)
 
 
 @model_builder_bp.route('/model-view/<visualization_name>')
