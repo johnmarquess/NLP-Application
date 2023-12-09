@@ -20,6 +20,12 @@ class TopicModelling:
         self.keep_n = keep_n
 
     def create_dictionary_corpus(self):
+        """
+        Create the dictionary and corpus for the given documents.
+
+        :param self: The instance of the class.
+        :return: None
+        """
         # Create Dictionary
         self.dictionary = corpora.Dictionary(self.docs)
         self.dictionary.filter_extremes(no_below=self.no_below, no_above=self.no_above, keep_n=self.keep_n)

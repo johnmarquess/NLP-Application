@@ -8,6 +8,7 @@ class Config(object):
     RAW_DATA_DIR = os.path.join(DATA_DIR, 'raw')
     CLEAN_DATA_DIR = os.path.join(DATA_DIR, 'clean')
     PROCESSED_DATA_DIR = os.path.join(DATA_DIR, 'processed')
+    LABELLED_DATA_DIR = os.path.join(DATA_DIR, 'labelled')
     MODELS_DIR = os.path.join(BASE_DIR, 'model_outputs')
     ALLOWED_EXTENSIONS = {'csv', 'xlsx', 'xls'}
     TEMPLATES_AUTO_RELOAD = True

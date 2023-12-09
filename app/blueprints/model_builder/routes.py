@@ -64,6 +64,15 @@ def reformat_data(row):
     return row.split()
 
 
+def get_top_words_per_topic(lda_model, num_words=10):
+    top_words_per_topic = []
+    for i in range(lda_model.num_topics):
+        words = lda_model.show_topic(i, num_words)
+        top_words = ", ".join([word for word, prob in words])
+        top_words_per_topic.append((i, top_words))
+    return top_words_per_topic
+
+
 @model_builder_bp.route('/model-builder', methods=['GET', 'POST'])
 def model_builder():
     model_form = ModelSelectionForm()
@@ -152,7 +161,7 @@ def topic_modeller():
 
             # Convert topics data to a DataFrame and then to HTML for display
             topics_df = pd.DataFrame(topics_data)
-            print(topics_df)
+
             lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
                                                 index=False)
 
@@ -171,7 +180,6 @@ def topic_modeller():
     else:
         flash("No data file selected for topic modeling.", "warning")
         return redirect(url_for('model_builder.model_builder'))
-    print("LDA Topics HTML:", lda_topics_html)
     # Render the template with the form and optional table
     return render_template('topic_modeller.html', form=form, lda_topics_html=lda_topics_html, lda_model=lda_model)
 

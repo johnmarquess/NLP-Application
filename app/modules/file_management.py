@@ -23,7 +23,8 @@ class FileManagement:
         directory_mapping = {
             'raw': current_app.config['RAW_DATA_DIR'],
             'clean': current_app.config['CLEAN_DATA_DIR'],
-            'processed': current_app.config['PROCESSED_DATA_DIR']
+            'processed': current_app.config['PROCESSED_DATA_DIR'],
+            'labelled': current_app.config['LABELLED_DATA_DIR']
         }
         return directory_mapping.get(directory_type)
 
