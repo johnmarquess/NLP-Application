@@ -78,6 +78,19 @@ class FileManagement:
 
     @staticmethod
     def list_worksheets(file_path):
+        """
+            Lists the worksheets in the specified Excel file.
+
+            Args:
+                file_path (str): The path of the Excel file.
+
+            Returns:
+                list: A list of worksheet names.
+
+            Raises:
+                str: If the file type is not supported for worksheet listing.
+                str: If an error occurs during worksheet listing.
+        """
         try:
             if file_path.endswith('.xlsx'):
                 workbook = openpyxl.load_workbook(file_path, read_only=True)
@@ -92,6 +105,15 @@ class FileManagement:
 
     @staticmethod
     def view_csv_contents(file_path, columns=None):
+        """
+        Args:
+            file_path: A string representing the file path to the CSV file.
+            columns: An optional list of column names to display. If not provided, all columns will be displayed.
+
+        Returns:
+            A HTML string displaying the contents of the CSV file. The first 5 rows of the file are displayed as an HTML table.
+            If an error occurs while reading the file, an error message is returned.
+        """
         try:
             df = pd.read_csv(file_path)
             df = df[columns] if columns else df
@@ -101,6 +123,34 @@ class FileManagement:
 
     @staticmethod
     def view_spreadsheet_contents(file_path, sheet_name):
+        """
+        Args:
+            file_path: The path to the Excel file.
+            sheet_name: The name of the worksheet in the Excel file to view.
+
+        Returns:
+            A tuple containing two dictionaries. The first dictionary contains a summary of the spreadsheet contents,
+            and the second dictionary contains some metadata about the spreadsheet.
+
+            The summary dictionary is constructed as follows:
+            - Each key represents a column name in the spreadsheet.
+            - Each value is a dictionary containing the following information about the column:
+                - 'column_name': The name of the column.
+                - 'first_item': The value of the first item in the column.
+                - 'missing_count': The number of missing (NaN) values in the column.
+
+            The metadata dictionary contains the following information:
+            - 'total_rows': The total number of rows in the spreadsheet.
+            - 'worksheet_name': The name of the worksheet in the spreadsheet.
+
+            If an error occurs during the execution of the method, a string indicating the error message is returned along
+            with an empty metadata dictionary.
+
+        Example usage:
+            file_path = '/path/to/spreadsheet.xlsx'
+            sheet_name = 'Sheet1'
+            summary, metadata = view_spreadsheet_contents(file_path, sheet_name)
+        """
         try:
             df = pd.read_excel(file_path, sheet_name=sheet_name)
             summary = {
@@ -117,6 +167,18 @@ class FileManagement:
 
     @staticmethod
     def get_csv_columns(file_path):
+        """
+        Returns a list of column names from a CSV file.
+
+        Args:
+            file_path (str): The path of the CSV file.
+
+        Returns:
+            list: A list of column names from the CSV file.
+
+        Raises:
+            str: An error message if there was an issue reading the file.
+        """
         try:
             df = pd.read_csv(file_path)
             return list(df.columns)
@@ -125,6 +187,21 @@ class FileManagement:
 
     @staticmethod
     def save_as_csv(df, filename, directory_type, encoding='utf-8'):
+        """
+        Saves a pandas DataFrame as a CSV file.
+
+        Args:
+            df: A pandas DataFrame to be saved as a CSV file.
+            filename: The name of the CSV file.
+            directory_type: The type of directory to save the file in. This should be a key in the application's configuration dictionary.
+            encoding: (optional) The encoding to use when saving the CSV file. Defaults to 'utf-8'.
+
+        Returns:
+            str: A message indicating the success or failure of the file saving operation.
+
+        Raises:
+            Exception: If an error occurs during the file saving operation.
+        """
         try:
             # Directly access the configuration
             dir_path = current_app.config.get(directory_type)
