@@ -17,8 +17,10 @@ model_builder_bp = Blueprint('model_builder', __name__, template_folder='templat
 # Forms and routes will be defined here
 def set_file_and_column_choices(data_form, file_manager, processed_data_dir):
     """
-    Sets the choices for the file field in the data form based on the available processed files in the specified directory.
-    Also selects the first file in the list, if available, and sets the choices for the column field in the data form based on the columns in the selected file.
+    Sets the choices for the file field in the data form based on the available processed files in the
+    specified directory.
+    Also selects the first file in the list, if available, and sets the choices for the column field in the
+    data form based on the columns in the selected file.
 
     Args:
         data_form (Form): The data form object.
@@ -159,15 +161,14 @@ def topic_modeller():
                 topic_words = ", ".join([word for word, _ in topic])
                 topics_data.append({'Topic Number': topic_num + 1, 'Top Words': topic_words})
 
+            # Create visualization
+            vis = gensimvis.prepare(lda_model, topic_modeler.corpus, topic_modeler.dictionary)
+
             # Convert topics data to a DataFrame and then to HTML for display
             topics_df = pd.DataFrame(topics_data)
 
             lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
                                                 index=False)
-
-            # Visualization and saving visualization logic goes here
-            # pyLDAvis.enable_notebook()
-            vis = gensimvis.prepare(lda_model, topic_modeler.corpus, topic_modeler.dictionary)
 
             # Save visualization
             visualization_name = form.visualization_name.data

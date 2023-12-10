@@ -26,6 +26,14 @@
                     </div>
                     <div class="form-group mb-lg-3">
                         {{ form.num_topics(class="form-control", placeholder=form.num_topics.label.text) }}
+
+                        {% if form.num_topics.errors %}
+                            {% for error in form.num_topics.errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+
+
                     </div>
                     <div class="form-group mb-lg-3">
                         {{ form.random_state(class="form-control", placeholder=form.random_state.label.text) }}
@@ -63,7 +71,7 @@
                             more than no_above% documents.
                         </li>
                     </ul>
-                <h5>Other instructions</h5>
+                    <h5>Other instructions</h5>
                     <ul>
                         <li>Token − A token means a ‘word’.</li>
                         <li>Document − A document refers to a sentence or paragraph.</li>

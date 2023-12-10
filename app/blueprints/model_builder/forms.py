@@ -38,10 +38,10 @@ class TopicModellingForm(FlaskForm):
     def validate_num_topics(form, field):
         try:
             field.data = int(field.data)
-            if field.data < 1 or field.data > 15:
-                raise ValidationError('Number of topics must be between 1 and 15.')
+            if field.data < 1 or field.data > 10:
+                raise ValidationError('Number of topics must be between 1 and 10.')
         except ValueError:
-            raise ValidationError("Number of topics must be an integer.")
+            raise ValidationError("Must be an integer between 1 and 10.")
 
     def validate_random_state(form, field):
         try:
