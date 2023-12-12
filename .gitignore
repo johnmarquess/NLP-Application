@@ -6,6 +6,8 @@
 !test_file.xlsx
 !test_file.xls
 !test_file.csv
+!entities.csv
+
 ### Flask template
 instance/*
 !instance/.gitignore
