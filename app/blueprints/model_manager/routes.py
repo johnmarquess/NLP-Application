@@ -4,7 +4,6 @@ import spacy
 from flask import Blueprint, session, redirect, url_for, current_app
 from flask import flash, render_template
 
-from app.modules.model_management import load_spacy_model
 from .forms import ModelSelectionForm, ModelSaveForm
 from ...modules import model_management
 
@@ -28,6 +27,16 @@ def model_manager():
                 flash(f'spaCy model {chosen_model} loaded successfully', 'success')
             except Exception as e:
                 flash(f'Error loading spaCy model: {str(e)}', 'error')
+
+        elif model_type == 'custom':
+            custom_model_name = selection_form.custom_model.data
+            try:
+                custom_model_path = os.path.join(current_app.config['MODEL_DIR'], custom_model_name)
+                nlp = spacy.load(custom_model_path)
+                session['custom_model_name'] = custom_model_name
+                flash(f'Custom model {custom_model_name} loaded successfully', 'success')
+            except Exception as e:
+                flash(f'Error loading custom model: {str(e)}', 'error')
 
     if save_form.validate_on_submit() and 'spacy_model_name' in session:
         custom_name = save_form.custom_model_name.data
