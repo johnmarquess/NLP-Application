@@ -7,15 +7,6 @@ from wtforms import SelectField, SubmitField, BooleanField, StringField
 from wtforms.validators import DataRequired
 
 
-class SpacyModelForm(FlaskForm):
-    model = SelectField('Model', choices=[
-        ('en_core_web_sm', 'English - Small'),
-        ('en_core_web_md', 'English - Medium'),
-        ('en_core_web_lg', 'English - Large'),
-        # ('en', 'English - Blank')
-    ], render_kw={"id": "model-select"})
-
-
 class DataProcessingForm(FlaskForm):
     # Dropdown for selecting the file
     file = SelectField(label='Choose a CSV file from your list of saved files.', validators=[DataRequired()])

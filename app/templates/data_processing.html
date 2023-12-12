@@ -2,36 +2,26 @@
 {% extends 'base.html' %}
 {% block title %}Data Processing{% endblock %}
 {% block content %}
-    <div class="container mt-lg-5">
+
     <h1 class="mb-lg-5">Data pre-processing</h1>
     <div class="row">
+
+
         <div class="col-md-6">
-            <h3>Model selection and processing Options</h3>
-            <p>Choose the model and the options you want to use for pre-processing</p>
+            <h3>Pre-processing Options</h3>
+            <p>A model is loaded by default.</p>
             <p>After you have selected the model and the options, click the <strong>Process Data</strong> button to
                 pre-process the data</p>
-            <label class="form-label">Select a spaCy model</label>
-            <form action="{{ url_for('file_manager.file_manager') }}" method="post" enctype="multipart/form-data">
-                {{ model_form.hidden_tag() }}
-                <!-- Assuming the model select field in your form -->
+            <form action="{{ url_for('data_processor.data_processing') }}" method="post">
+                <span id="columns-url" style="display:none;" data-url="{{ url_for('data_processor.get_columns', filename='') }}"></span>
 
-                {{ model_form.model(class="form-select mb-3", id="model-select") }}
-            </form>
-
-            <form method="post">
                 {{ preprocess_form.hidden_tag() }}
-
-                <span id="columns-url" style="display:none;"
-                      data-url="{{ url_for('data_processor.get_columns', filename='') }}"></span>
-
                 <div class="mb-3">
                     <label class="form-label">Select a file to process</label>
                     {{ preprocess_form.file(class="form-select", id="data-processing-file-select") }}
-
                 </div>
-
                 <div class="mb-3">
-                    <label class="form-label">And a colum from that file</label>
+                    <label class="form-label">And a column from that file</label>
                     {{ preprocess_form.column_to_preprocess(class="form-select", id="data-processing-column-select") }}
                 </div>
                 <h5 class="form-label">Choose your processing options</h5>
@@ -78,10 +68,10 @@
                 <div class="mb-3">
                     {{ preprocess_form.output_filename(class="form-control", placeholder="Output filename") }}
                 </div>
-                <form method="post">
+
                     <input type="submit" name="process_submit" value="Process Data"
                            class="btn btn-outline-primary btn-sm">
-                </form>
+
             </form>
         </div>
 
