@@ -95,3 +95,4 @@ class TopicModellingForm(FlaskForm):
             raise ValidationError("Number of words to keep must be an integer between 1 and 1000000.")
 
     submit = SubmitField("Build Topic Model")
+
