@@ -126,6 +126,7 @@ def get_columns(filename):
 @model_builder_bp.route('/topic-modeller', methods=['GET', 'POST'])
 def topic_modeller():
     form = TopicModellingForm()
+    file_manager = FileManagement()
     lda_topics_html = ""  # Initialize variable here
     lda_model = None
 
@@ -153,28 +154,67 @@ def topic_modeller():
             topic_modeler.create_dictionary_corpus()
             lda_model = topic_modeler.build_model()
 
-            # After building the model, extract top words for each topic
-            topics = lda_model.show_topics(num_topics=form.num_topics.data, num_words=10, formatted=False)
-            topics_data = []
+            # for doc in lda_model[topic_modeler.corpus]:
+            #     print(type(doc), doc)  # This will help understand the structure
+            #     break
 
-            for topic_num, topic in topics:
-                topic_words = ", ".join([word for word, _ in topic])
-                topics_data.append({'Topic Number': topic_num + 1, 'Top Words': topic_words})
+            dominant_topics = []
+            for doc in lda_model[topic_modeler.corpus]:
+                if doc:
+                    # Extract only the topic contributions (first element of doc)
+                    topic_contributions = doc[0]
+                    if topic_contributions:  # Ensure it's not empty
+                        # Find the dominant topic
+                        dominant_topic = max(topic_contributions, key=lambda x: x[1])[0] + 1  # Convert to 1-based index
+                        dominant_topics.append(dominant_topic)
+                    else:
+                        dominant_topics.append(None)
+                else:
+                    dominant_topics.append(None)
+
+            print(dominant_topics[:10])
+
+            df['dominant_topic'] = dominant_topics
+
+            # Extract top 5 words for each topic and adjust for 1-based indexing
+            top_words_per_topic = {topic_num + 1: [word for word, prob in lda_model.show_topic(topic_num, 5)]
+                                   for topic_num in range(lda_model.num_topics)}
+
+            df['top_words'] = df['dominant_topic'].map(lambda x: ', '.join(top_words_per_topic[x]) if x else '')
+
+            # Save the updated dataframe using FileManagement
+            updated_filename = 'updated_' + os.path.basename(file_path)
+            save_message = file_manager.save_as_csv(df, updated_filename, 'PROCESSED_DATA_DIR')
+
+            # Check if the file was saved successfully
+            if 'File saved successfully' in save_message:
+                flash("Updated dataframe saved successfully.", "success")
+                # Optionally, store the updated file path in the session for further use
+                session['updated_dataframe_file_path'] = os.path.join(current_app.config['PROCESSED_DATA_DIR'],
+                                                                      updated_filename)
+            else:
+                flash(save_message, "error")
+
+            # for topic_num, topic in topics:
+            #     topic_words = ", ".join([word for word, _ in topic])
+            #     topics_data.append({'Topic Number': topic_num + 1, 'Top Words': topic_words})
 
             # Create visualization
             vis = gensimvis.prepare(lda_model, topic_modeler.corpus, topic_modeler.dictionary)
 
             # Convert topics data to a DataFrame and then to HTML for display
-            topics_df = pd.DataFrame(topics_data)
-
-            lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
-                                                index=False)
+            # topics_df = pd.DataFrame(topics_data)
+            #
+            # lda_topics_html = topics_df.to_html(classes=['table', 'table-roboto'], justify='left',
+            #                                     index=False)
 
             # Save visualization
             visualization_name = form.visualization_name.data
+
             if not os.path.exists(current_app.config['MODEL_OUTPUTS_DIR']):
                 os.makedirs(current_app.config['MODEL_OUTPUTS_DIR'])
             output_path = os.path.join(current_app.config['MODEL_OUTPUTS_DIR'], f"{visualization_name}.html")
+        
             pyLDAvis.save_html(vis, output_path)
             session['last_visualization_name'] = visualization_name
 
@@ -195,4 +235,22 @@ def model_view(visualization_name):
 
 @model_builder_bp.route('/model-output/<filename>')
 def model_output(filename):
+
     return send_from_directory(current_app.config['MODEL_OUTPUTS_DIR'], filename)
+
+@model_builder_bp.route('/updated-dataframe')
+def updated_dataframe():
+    # Assuming you have saved the updated path in the session
+    updated_file_path = session.get('updated_dataframe_file_path')
+    if not updated_file_path:
+        flash("No updated dataframe available.", "warning")
+        return redirect(url_for('model_builder.model_builder'))
+
+    try:
+        df = pd.read_csv(updated_file_path)
+        table_html = df.to_html(classes=['table', 'table-striped'], escape=False, index=False)
+    except Exception as e:
+        flash(f'Error loading updated dataframe: {e}', 'error')
+        return redirect(url_for('model_builder.model_builder'))
+
+    return render_template('updated_dataframe.html', table_html=table_html)
