@@ -14,6 +14,12 @@
                 {{ selection_form.spacy_model.label }}<br>
                 {{ selection_form.spacy_model(class="form-select") }}
             </div>
+
+            <div id="custom-model-selection" style="display: none;">
+                {{ selection_form.custom_model.label }}<br>
+                {{ selection_form.custom_model(class="form-select") }}
+            </div>
+
             {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
 
@@ -32,17 +38,25 @@
         document.addEventListener('DOMContentLoaded', function () {
             var modelTypeSelect = document.getElementById('model_type');
             var spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
+            var customModelSelectionDiv = document.getElementById('custom-model-selection');
 
-            function updateSpacyModelSelection() {
+            function updateModelSelection() {
                 if (modelTypeSelect.value === 'spacy_core') {
                     spacyModelSelectionDiv.style.display = 'block';
+                    customModelSelectionDiv.style.display = 'none';
+                } else if (modelTypeSelect.value === 'custom') {
+                    customModelSelectionDiv.style.display = 'block';
+                    spacyModelSelectionDiv.style.display = 'none';
                 } else {
                     spacyModelSelectionDiv.style.display = 'none';
+                    customModelSelectionDiv.style.display = 'none';
                 }
             }
 
-            modelTypeSelect.addEventListener('change', updateSpacyModelSelection);
-            updateSpacyModelSelection(); // Run on load in case of pre-selected value
+            modelTypeSelect.addEventListener('change', updateModelSelection);
+            updateModelSelection(); // Run on load in case of pre-selected value
         });
+
+
     </script>
 {% endblock %}
