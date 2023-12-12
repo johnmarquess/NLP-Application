@@ -1,33 +1,55 @@
+import os
+
 import spacy
-from flask import flash, session
+from flask import session, current_app
 
 
-class ModelManager:
-    def __init__(self):
-        self.nlp = None
+def load_spacy_model():
+    model_name = session.get('spacy_model_name')
+    if model_name:
+        try:
+            return spacy.load(model_name)
+        except Exception as e:
+            print(f"Error loading spaCy model: {e}")
+            return None
+    return None
 
-    def load_spacy_model_from_session(self):
-        model_choice = session.get('selected_model', 'en_core_web_sm')
-        if model_choice:
-            try:
-                if model_choice in ['en_core_web_sm', 'en_core_web_md', 'en_core_web_lg']:
-                    self.nlp = spacy.load(model_choice)
-                else:
-                    flash(f"Invalid model choice: {model_choice}", 'danger')
-                    return None
-            except Exception as e:
-                flash(f"Failed to load model {model_choice}: {str(e)}", 'danger')
 
-    # Additional methods like save_model, update_model, etc.
+def use_model(text):
+    nlp = load_spacy_model()
+    if nlp:
+        doc = nlp(text)
+        # Perform operations with the spaCy Doc object
+        return doc
+    else:
+        # Handle the case where the model is not loaded
+        return None
 
-    @property
-    def model(self):
-        return self.nlp
 
-    @staticmethod
-    def set_model_in_session(model_name):
-        session['selected_model'] = model_name
+def load_huggingface_model(model_name, api_key):
+    try:
+        # Setup and load the Hugging Face model
+        # Example: model = transformers.pipeline('model-pipeline', model=model_name, token=api_key)
+        return model_name
+    except Exception as e:
+        raise e  # or handle the exception as needed
 
-    @staticmethod
-    def get_model_from_session():
-        return session.get('selected_model')
+
+def load_local_model(model_path):
+    # Logic to load local model
+    pass
+
+
+# noinspection PyTypeChecker
+def save_model(model_name):
+    nlp = spacy.load(model_name)
+    models_dir = current_app.config['MODEL_DIR']
+    model_path = os.path.join(models_dir, model_name)
+
+    # Create the directory if it does not exist
+    if not os.path.exists(models_dir):
+        os.makedirs(models_dir)
+
+    # noinspection PyTypeChecker
+    nlp.to_disk(model_path)
+    return f"Model saved successfully at {model_path}"

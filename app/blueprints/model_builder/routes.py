@@ -172,7 +172,9 @@ def topic_modeller():
 
             # Save visualization
             visualization_name = form.visualization_name.data
-            output_path = os.path.join(current_app.config['MODELS_DIR'], f"{visualization_name}.html")
+            if not os.path.exists(current_app.config['MODEL_OUTPUTS_DIR']):
+                os.makedirs(current_app.config['MODEL_OUTPUTS_DIR'])
+            output_path = os.path.join(current_app.config['MODEL_OUTPUTS_DIR'], f"{visualization_name}.html")
             pyLDAvis.save_html(vis, output_path)
             session['last_visualization_name'] = visualization_name
 
@@ -193,4 +195,4 @@ def model_view(visualization_name):
 
 @model_builder_bp.route('/model-output/<filename>')
 def model_output(filename):
-    return send_from_directory(current_app.config['MODELS_DIR'], filename)
+    return send_from_directory(current_app.config['MODEL_OUTPUTS_DIR'], filename)
