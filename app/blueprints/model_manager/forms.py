@@ -18,3 +18,7 @@ class ModelSelectionForm(FlaskForm):
         # ... other spaCy models ...
     ], validators=[DataRequired()])
 
+
+class ModelSaveForm(FlaskForm):
+    custom_model_name = StringField('Custom Model Name', validators=[DataRequired()])
+    save = SubmitField('Save Model')

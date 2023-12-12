@@ -53,3 +53,15 @@ def save_model(model_name):
     # noinspection PyTypeChecker
     nlp.to_disk(model_path)
     return f"Model saved successfully at {model_path}"
+
+
+def save_model_with_custom_name(model_name, custom_name):
+    nlp = spacy.load(model_name)
+    model_output_dir = current_app.config['MODEL_DIR']
+    custom_model_path = os.path.join(model_output_dir, custom_name)
+
+    if not os.path.exists(model_output_dir):
+        os.makedirs(model_output_dir)
+
+    nlp.to_disk(custom_model_path)
+    return f"Model saved successfully with the name '{custom_name}' at {custom_model_path}"

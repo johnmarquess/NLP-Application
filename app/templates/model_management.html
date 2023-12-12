@@ -1,24 +1,30 @@
-<!-- model_manager.html -->
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
         <h2>Model Manager</h2>
+
+        <!-- Form for selecting and loading models -->
         <form method="post" action="{{ url_for('model_manager.model_manager') }}">
-            {{ form.hidden_tag() }}
+            {{ selection_form.hidden_tag() }}
             <div>
-                {{ form.model_type.label }}<br>
-                {{ form.model_type(class="form-select") }}
+                {{ selection_form.model_type.label }}<br>
+                {{ selection_form.model_type(class="form-select") }}
             </div>
             <div id="spacy-model-selection" style="display: none;">
-                {{ form.spacy_model.label }}<br>
-                {{ form.spacy_model(class="form-select") }}
+                {{ selection_form.spacy_model.label }}<br>
+                {{ selection_form.spacy_model(class="form-select") }}
             </div>
-            {{ form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
+            {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
 
-        <!-- Add a button to save the model -->
+        <!-- Form for saving the model with a custom name -->
         <form method="post" action="{{ url_for('model_manager.save_model') }}">
-            <button type="submit" class="btn btn-outline-secondary btn-sm mt-lg-2">Save Loaded Model</button>
+            {{ save_form.hidden_tag() }}
+            <div>
+                {{ save_form.custom_model_name.label }}<br>
+                {{ save_form.custom_model_name(class="form-control") }}
+            </div>
+            {{ save_form.save(class="btn btn-outline-secondary btn-sm mt-lg-2") }}
         </form>
     </div>
 
