@@ -1,8 +1,11 @@
-from flask import Blueprint, session, redirect, url_for
+import os
+
+import spacy
+from flask import Blueprint, session, redirect, url_for, current_app
 from flask import flash, render_template
 
 from app.modules.model_management import load_spacy_model
-from .forms import ModelSelectionForm
+from .forms import ModelSelectionForm, ModelSaveForm
 from ...modules import model_management
 
 # Define the blueprint
@@ -11,43 +14,53 @@ model_manager_bp = Blueprint('model_manager', __name__, template_folder='templat
 
 @model_manager_bp.route('/model-manager', methods=['GET', 'POST'])
 def model_manager():
-    form = ModelSelectionForm()
-    if form.validate_on_submit():
-        model_type = form.model_type.data
+    selection_form = ModelSelectionForm()
+    save_form = ModelSaveForm()
+
+    if selection_form.validate_on_submit():
+        model_type = selection_form.model_type.data
 
         if model_type == 'spacy_core':
-            chosen_model = form.spacy_model.data
-            session['spacy_model_name'] = chosen_model  # Store the chosen model in session
+            chosen_model = selection_form.spacy_model.data
             try:
-                nlp = load_spacy_model()
-                if nlp:
-                    flash(f'spaCy model {chosen_model} loaded successfully', 'success')
-                    print(nlp.pipe_names)
-                else:
-                    flash(f'Failed to load spaCy model {chosen_model}', 'error')
+                nlp = spacy.load(chosen_model)
+                session['spacy_model_name'] = chosen_model
+                flash(f'spaCy model {chosen_model} loaded successfully', 'success')
             except Exception as e:
                 flash(f'Error loading spaCy model: {str(e)}', 'error')
 
-    else:
-        print("Form Validation Errors:", form.errors)  # Logic to load the model based on type and name
-        # ...
+    if save_form.validate_on_submit() and 'spacy_model_name' in session:
+        custom_name = save_form.custom_model_name.data
+        try:
+            model_name = session['spacy_model_name']
+            nlp = spacy.load(model_name)
+            models_dir = current_app.config['MODEL_DIR']
+            model_path = os.path.join(models_dir, custom_name)
+            if not os.path.exists(models_dir):
+                os.makedirs(models_dir)
+            nlp.to_disk(model_path)
+            flash(f"Model saved successfully as {custom_name}", 'success')
+        except Exception as e:
+            flash(f'Error saving model: {str(e)}', 'error')
 
-        # return redirect(url_for('model_manager.model_manager'))
-    return render_template('model_management.html', form=form)
+    return render_template('model_management.html', selection_form=selection_form, save_form=save_form)
 
 
 @model_manager_bp.route('/save-model', methods=['POST'])
 def save_model():
-    # Assumes the chosen model name is stored in the session
-    chosen_model = session.get('spacy_model_name')
-    if not chosen_model:
-        flash('No model selected to save.', 'error')
-        return redirect(url_for('model_manager.model_manager'))
+    form = ModelSaveForm()
+    if form.validate_on_submit():
+        custom_name = form.custom_model_name.data
+        chosen_model = session.get('spacy_model_name')
 
-    try:
-        save_message = model_management.save_model(chosen_model)
-        flash(save_message, 'success')
-    except Exception as e:
-        flash(f'Error saving model: {str(e)}', 'error')
+        if not chosen_model:
+            flash('No model selected to save.', 'error')
+            return redirect(url_for('model_manager.model_manager'))
+
+        try:
+            save_message = model_management.save_model_with_custom_name(chosen_model, custom_name)
+            flash(save_message, 'success')
+        except Exception as e:
+            flash(f'Error saving model: {str(e)}', 'error')
 
     return redirect(url_for('model_manager.model_manager'))
