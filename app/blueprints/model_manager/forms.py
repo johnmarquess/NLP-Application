@@ -21,6 +21,8 @@ class ModelSelectionForm(FlaskForm):
         # ... other spaCy models ...
     ], validators=[DataRequired()])
 
+    huggingface_model = StringField('Hugging Face Model Identifier', validators=[Optional()])
+
     custom_model = SelectField('Custom Model', validators=[Optional()])  # Optional, as it's not always required
 
     def __init__(self, *args, **kwargs):
