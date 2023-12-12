@@ -8,17 +8,15 @@
 
     <div class="container mt-lg-5">
         <h1>NLP modelling application</h1>
-        <p class="col-md-10 mt-lg-5 mb-lg-5">This Flask application is designed to provide a user-friendly interface for
-            handling files, processing
-            data, and integrating machine learning models for natural language processing tasks. It features a
-            robust architecture using Flask Blueprints, Flask-WTF for form handling, and Pandas for data
-            processing.</p>
-
+        <p class="col-md-12 mt-lg-5 mb-lg-5">This Flask application is designed to provide a user-friendly interface for
+            handling files, processing data, and integrating machine learning models for natural language processing
+            tasks. It features a robust architecture using Flask Blueprints, Flask-WTF for form handling, and Pandas for
+            data processing.</p>
 
         <div class="container">
-            <div class="row">
+            <div class="row d-flex justify-content-center">
                 <!-- Data Management -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <img src="{{ url_for('static', filename='img/file_mgt.png') }}" alt="File Management" width="150">
                     <h3>File Management</h3>
                     <p>Upload, view, and delete files</p>
@@ -26,23 +24,33 @@
                         More</a>
                 </div>
                 <!-- Pre-processing -->
-                <div class="col-md-4">
-                    <img src="{{ url_for('static', filename='img/data_process.png') }}" alt="DAta pre-processing"
+                <div class="col-md-3">
+                    <img src="{{ url_for('static', filename='img/data_process.png') }}" alt="Data pre-processing"
                          width="150">
                     <h3>Data Processing</h3>
                     <p>Description of Processing.</p>
                     <a href="{{ url_for('data_processor.data_processing') }}" class="btn btn-outline-primary btn-sm">Learn
                         More</a>
                 </div>
+                <!-- Model Management -->
+                <div class="col-md-3">
+                    <img src="{{ url_for('static', filename='img/model_manager.png') }}" alt="Model Management"
+                         width="150">
+                    <h3>Model Management</h3>
+                    <p>Description of Model Management.</p>
+                    <a href="{{ url_for('model_manager.model_manager') }}" class="btn btn-outline-primary btn-sm">Learn
+                        More</a>
+                </div>
                 <!-- Data Modelling -->
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <img src="{{ url_for('static', filename='img/data_model.png') }}" alt="Data Modelling" width="150">
                     <h3>Data Modelling</h3>
                     <p>Description of Data Modelling.</p>
+                    <a href="{{ url_for('model_builder.model_builder') }}" class="btn btn-outline-primary btn-sm">Learn
+                        More</a>
                 </div>
-
-
             </div>
         </div>
     </div>
+
 {% endblock %}
