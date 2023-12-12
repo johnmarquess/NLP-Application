@@ -20,6 +20,11 @@
                 {{ selection_form.custom_model(class="form-select") }}
             </div>
 
+            <div id="huggingface-model-selection" style="display: none;">
+                {{ selection_form.huggingface_model.label }}<br>
+                {{ selection_form.huggingface_model(class="form-control") }}
+            </div>
+
             {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
 
@@ -30,6 +35,7 @@
                 {{ save_form.custom_model_name.label }}<br>
                 {{ save_form.custom_model_name(class="form-control") }}
             </div>
+
             {{ save_form.save(class="btn btn-outline-secondary btn-sm mt-lg-2") }}
         </form>
     </div>
@@ -39,24 +45,17 @@
             var modelTypeSelect = document.getElementById('model_type');
             var spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
             var customModelSelectionDiv = document.getElementById('custom-model-selection');
+            var huggingfaceModelSelectionDiv = document.getElementById('huggingface-model-selection');
 
             function updateModelSelection() {
-                if (modelTypeSelect.value === 'spacy_core') {
-                    spacyModelSelectionDiv.style.display = 'block';
-                    customModelSelectionDiv.style.display = 'none';
-                } else if (modelTypeSelect.value === 'custom') {
-                    customModelSelectionDiv.style.display = 'block';
-                    spacyModelSelectionDiv.style.display = 'none';
-                } else {
-                    spacyModelSelectionDiv.style.display = 'none';
-                    customModelSelectionDiv.style.display = 'none';
-                }
+                spacyModelSelectionDiv.style.display = modelTypeSelect.value === 'spacy_core' ? 'block' : 'none';
+                customModelSelectionDiv.style.display = modelTypeSelect.value === 'custom' ? 'block' : 'none';
+                huggingfaceModelSelectionDiv.style.display = modelTypeSelect.value === 'huggingface' ? 'block' : 'none';
             }
 
             modelTypeSelect.addEventListener('change', updateModelSelection);
             updateModelSelection(); // Run on load in case of pre-selected value
         });
-
-
     </script>
+
 {% endblock %}

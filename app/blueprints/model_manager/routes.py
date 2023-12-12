@@ -3,6 +3,7 @@ import os
 import spacy
 from flask import Blueprint, session, redirect, url_for, current_app
 from flask import flash, render_template
+from transformers import AutoModel, AutoTokenizer
 
 from .forms import ModelSelectionForm, ModelSaveForm
 from ...modules import model_management
@@ -37,6 +38,21 @@ def model_manager():
                 flash(f'Custom model {custom_model_name} loaded successfully', 'success')
             except Exception as e:
                 flash(f'Error loading custom model: {str(e)}', 'error')
+
+        elif model_type == 'huggingface':
+            hf_model_identifier = selection_form.huggingface_model.data
+            try:
+                # Set up the Hugging Face access token
+                os.environ["HF_ACCESS_TOKEN"] = current_app.config['HF_ACCESS_TOKEN']
+
+                # Load the model and tokenizer from Hugging Face
+                model = AutoModel.from_pretrained(hf_model_identifier)
+                tokenizer = AutoTokenizer.from_pretrained(hf_model_identifier)
+
+                # You can add logic to save or use the model here
+                flash(f'Hugging Face model {hf_model_identifier} loaded successfully', 'success')
+            except Exception as e:
+                flash(f'Error loading Hugging Face model: {str(e)}', 'error')
 
     if save_form.validate_on_submit() and 'spacy_model_name' in session:
         custom_name = save_form.custom_model_name.data
