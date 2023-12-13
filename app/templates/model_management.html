@@ -20,10 +20,6 @@
                 {{ selection_form.custom_model(class="form-select") }}
             </div>
 
-            <div id="huggingface-model-selection" style="display: none;">
-                {{ selection_form.huggingface_model.label }}<br>
-                {{ selection_form.huggingface_model(class="form-control") }}
-            </div>
             {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
 
@@ -61,6 +57,21 @@
             <h3>Reference File Contents</h3>
             {{ table_html|safe }}
         </div>
+
+        <!-- Form for updating the model with the selected reference file -->
+        <form method="post" action="{{ url_for('model_manager.update_model_with_reference_file') }}">
+            <input type="hidden" name="selected_reference_file" value="{{ selected_reference_file }}">
+            <input type="submit" value="Update Model with Selected Reference File" class="btn btn-primary mt-2"
+                    {% if not model_loaded %} disabled {% endif %}>
+        </form>
+
+        <!-- Displaying entity counts -->
+        {% if before_count and after_count %}
+            <div class="mt-3">
+                <p>Entity count before update: {{ before_count }}</p>
+                <p>Entity count after update: {{ after_count }}</p>
+            </div>
+        {% endif %}
     {% endif %}
 
     <script>
@@ -68,12 +79,10 @@
             let modelTypeSelect = document.getElementById('model_type');
             let spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
             let customModelSelectionDiv = document.getElementById('custom-model-selection');
-            let huggingfaceModelSelectionDiv = document.getElementById('huggingface-model-selection');
 
             function updateModelSelection() {
                 spacyModelSelectionDiv.style.display = modelTypeSelect.value === 'spacy_core' ? 'block' : 'none';
                 customModelSelectionDiv.style.display = modelTypeSelect.value === 'custom' ? 'block' : 'none';
-                huggingfaceModelSelectionDiv.style.display = modelTypeSelect.value === 'huggingface' ? 'block' : 'none';
             }
 
             modelTypeSelect.addEventListener('change', updateModelSelection);

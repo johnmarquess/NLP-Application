@@ -1,8 +1,10 @@
 import os
 
+import pandas as pd
 import spacy
 from flask import current_app, session
-from transformers import AutoModel, AutoTokenizer
+from spacy.matcher import PhraseMatcher
+from spacy.tokens import Span
 
 
 class ModelManager:
@@ -12,7 +14,8 @@ class ModelManager:
         if model_name:
             self.load_model(model_name)
 
-    def load_model(self, model_type, model_identifier):
+    @staticmethod
+    def load_model(model_type, model_identifier):
         try:
             if model_type == 'spacy_core':
                 nlp = spacy.load(model_identifier)
@@ -25,13 +28,6 @@ class ModelManager:
                 session['custom_model_name'] = model_identifier
                 return f"Custom model {model_identifier} loaded successfully", nlp
 
-            elif model_type == 'huggingface':
-                # Set up the Hugging Face access token
-                os.environ["HF_ACCESS_TOKEN"] = current_app.config['HF_ACCESS_TOKEN']
-                model = AutoModel.from_pretrained(model_identifier)
-                tokenizer = AutoTokenizer.from_pretrained(model_identifier)
-                # Here you can handle the loaded model and tokenizer
-                return f"Hugging Face model {model_identifier} loaded successfully", (model, tokenizer)
 
         except Exception as e:
             return f"Error loading model: {str(e)}", None
@@ -51,3 +47,44 @@ class ModelManager:
             return f"Model saved successfully with the name '{custom_name}' at {custom_model_path}"
         except Exception as e:
             return f"Error saving model: {str(e)}"
+
+    def update_model_with_entities(self, reference_file_path):
+        if not self.nlp:
+            raise ValueError("No model loaded to update")
+
+        # Count entities before update
+        before_count = len(self.nlp.pipe_labels.get("ner", []))
+
+        # Read the reference file
+        df = pd.read_csv(reference_file_path)
+        patterns = df.values.tolist()
+
+        # Update the model
+        ruler = self.nlp.add_pipe("entity_ruler", before="ner")
+        ruler.add_patterns([{"label": label, "pattern": pattern} for pattern, label in patterns])
+
+        # Add phrase matcher component if multi-word entities are present
+        multi_word_patterns = [pattern for pattern, label in patterns if len(pattern.split()) > 1]
+        if multi_word_patterns:
+            phrase_matcher = PhraseMatcher(self.nlp.vocab)
+            for pattern in multi_word_patterns:
+                phrase_matcher.add("CUSTOM_ENTITY", [self.nlp.make_doc(pattern)])
+            self.nlp.add_pipe(self.phrase_matcher_component(phrase_matcher), before="entity_ruler")
+
+        # Count entities after update
+        after_count = len(self.nlp.pipe_labels.get("ner", []))
+
+        return before_count, after_count
+
+    @staticmethod
+    def phrase_matcher_component(phrase_matcher):
+        def custom_component(doc):
+            matches = phrase_matcher(doc)
+            spans = []
+            for match_id, start, end in matches:
+                span = Span(doc, start, end, label="CUSTOM_ENTITY")
+                spans.append(span)
+            doc.ents = list(doc.ents) + spans
+            return doc
+
+        return custom_component
