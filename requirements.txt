@@ -6,5 +6,6 @@ pandas==2.1.4
 pyLDAvis==3.4.1
 pytest==7.4.3
 spacy==3.7.2
+transformers==4.36.0
 Werkzeug==3.0.1
 WTForms==3.1.1

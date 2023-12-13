@@ -10,7 +10,6 @@ from wtforms.validators import DataRequired, Optional
 class ModelSelectionForm(FlaskForm):
     model_type = SelectField('Model Type', choices=[
         ('spacy_core', 'spaCy Core Models'),
-        ('huggingface', 'Hugging Face Models'),
         ('custom', 'Custom Models')
     ], validators=[DataRequired()])
     model_name = StringField('Model Name/Path')
@@ -21,8 +20,6 @@ class ModelSelectionForm(FlaskForm):
         ('en_core_web_md', 'English - Medium')
         # ... other spaCy models ...
     ], validators=[DataRequired()])
-
-    huggingface_model = StringField('Hugging Face Model Identifier', validators=[Optional()])
 
     custom_model = SelectField('Custom Model', validators=[Optional()])  # Optional, as it's not always required
 
