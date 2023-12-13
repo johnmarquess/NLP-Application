@@ -3,6 +3,7 @@ import os
 from flask import current_app, flash
 from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, SubmitField
+from wtforms.fields.choices import RadioField
 from wtforms.validators import DataRequired, Optional
 
 
@@ -38,6 +39,11 @@ class ModelSelectionForm(FlaskForm):
         else:
             self.custom_model.choices = []
             flash("Model directory not found.", "error")
+
+
+class ReferenceFileForm(FlaskForm):
+    reference_file = RadioField('Select Reference File', validators=[DataRequired()])
+    submit = SubmitField('Load File')
 
 
 class ModelSaveForm(FlaskForm):

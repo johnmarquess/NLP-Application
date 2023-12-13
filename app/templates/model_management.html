@@ -24,9 +24,24 @@
                 {{ selection_form.huggingface_model.label }}<br>
                 {{ selection_form.huggingface_model(class="form-control") }}
             </div>
-
             {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
+
+
+        <!-- Form for reference file selection -->
+        <form method="post" action="{{ url_for('model_manager.model_manager') }}">
+            {{ reference_form.hidden_tag() }}
+            <fieldset>
+                <legend>{{ reference_form.reference_file.label }}</legend>
+                {% for choice in reference_form.reference_file %}
+                    <div class="form-check">
+                        {{ choice }} {{ choice.label(class="form-check-label") }}
+                    </div>
+                {% endfor %}
+            </fieldset>
+            {{ reference_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
+        </form>
+
 
         <!-- Form for saving the model with a custom name -->
         <form method="post" action="{{ url_for('model_manager.save_model') }}">
@@ -40,12 +55,20 @@
         </form>
     </div>
 
+
+    {% if table_html %}
+        <div class="mt-4">
+            <h3>Reference File Contents</h3>
+            {{ table_html|safe }}
+        </div>
+    {% endif %}
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var modelTypeSelect = document.getElementById('model_type');
-            var spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
-            var customModelSelectionDiv = document.getElementById('custom-model-selection');
-            var huggingfaceModelSelectionDiv = document.getElementById('huggingface-model-selection');
+            let modelTypeSelect = document.getElementById('model_type');
+            let spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
+            let customModelSelectionDiv = document.getElementById('custom-model-selection');
+            let huggingfaceModelSelectionDiv = document.getElementById('huggingface-model-selection');
 
             function updateModelSelection() {
                 spacyModelSelectionDiv.style.display = modelTypeSelect.value === 'spacy_core' ? 'block' : 'none';
