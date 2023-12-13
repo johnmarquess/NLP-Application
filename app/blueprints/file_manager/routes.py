@@ -76,7 +76,7 @@ def file_manager():
 def view_worksheet():
     file_path = request.args.get('file_path')
     sheet_name = request.args.get('sheet_name')
-    file_name = request.args.get('file_name')
+    # file_name = request.args.get('file_name')
 
     # Ensure both file_path and sheet_name are provided
     if not file_path or not sheet_name:

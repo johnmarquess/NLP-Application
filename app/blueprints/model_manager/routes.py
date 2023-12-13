@@ -1,12 +1,11 @@
 import os
 
-import spacy
 from flask import Blueprint, session, redirect, url_for, current_app
 from flask import flash, render_template
-from transformers import AutoModel, AutoTokenizer
 
-from .forms import ModelSelectionForm, ModelSaveForm
-from ...modules import model_management
+from app.modules.file_management import FileManagement
+from app.modules.model_management import ModelManager
+from .forms import ModelSelectionForm, ModelSaveForm, ReferenceFileForm
 
 # Define the blueprint
 model_manager_bp = Blueprint('model_manager', __name__, template_folder='templates')
@@ -16,59 +15,41 @@ model_manager_bp = Blueprint('model_manager', __name__, template_folder='templat
 def model_manager():
     selection_form = ModelSelectionForm()
     save_form = ModelSaveForm()
+    file_manager_instance = FileManagement()
+    reference_form = ReferenceFileForm()
+    table_html = None
 
     if selection_form.validate_on_submit():
         model_type = selection_form.model_type.data
+        model_identifier = ""
 
         if model_type == 'spacy_core':
-            chosen_model = selection_form.spacy_model.data
-            try:
-                nlp = spacy.load(chosen_model)
-                session['spacy_model_name'] = chosen_model
-                flash(f'spaCy model {chosen_model} loaded successfully', 'success')
-            except Exception as e:
-                flash(f'Error loading spaCy model: {str(e)}', 'error')
-
+            model_identifier = selection_form.spacy_model.data
         elif model_type == 'custom':
-            custom_model_name = selection_form.custom_model.data
-            try:
-                custom_model_path = os.path.join(current_app.config['MODEL_DIR'], custom_model_name)
-                nlp = spacy.load(custom_model_path)
-                session['custom_model_name'] = custom_model_name
-                flash(f'Custom model {custom_model_name} loaded successfully', 'success')
-            except Exception as e:
-                flash(f'Error loading custom model: {str(e)}', 'error')
-
+            model_identifier = selection_form.custom_model.data
         elif model_type == 'huggingface':
-            hf_model_identifier = selection_form.huggingface_model.data
-            try:
-                # Set up the Hugging Face access token
-                os.environ["HF_ACCESS_TOKEN"] = current_app.config['HF_ACCESS_TOKEN']
+            model_identifier = selection_form.huggingface_model.data
 
-                # Load the model and tokenizer from Hugging Face
-                model = AutoModel.from_pretrained(hf_model_identifier)
-                tokenizer = AutoTokenizer.from_pretrained(hf_model_identifier)
+        model_manager = ModelManager()
+        load_message, model = model_manager.load_model(model_type, model_identifier)
 
-                # You can add logic to save or use the model here
-                flash(f'Hugging Face model {hf_model_identifier} loaded successfully', 'success')
-            except Exception as e:
-                flash(f'Error loading Hugging Face model: {str(e)}', 'error')
+        if 'Error loading model' in load_message:
+            flash(load_message, 'error')
+        else:
+            flash(load_message, 'success')
 
-    if save_form.validate_on_submit() and 'spacy_model_name' in session:
-        custom_name = save_form.custom_model_name.data
-        try:
-            model_name = session['spacy_model_name']
-            nlp = spacy.load(model_name)
-            models_dir = current_app.config['MODEL_DIR']
-            model_path = os.path.join(models_dir, custom_name)
-            if not os.path.exists(models_dir):
-                os.makedirs(models_dir)
-            nlp.to_disk(model_path)
-            flash(f"Model saved successfully as {custom_name}", 'success')
-        except Exception as e:
-            flash(f'Error saving model: {str(e)}', 'error')
+    # Populate choices for reference files
+    reference_files = file_manager_instance.list_files('reference')
+    reference_form.reference_file.choices = [(f, f) for f in reference_files]
 
-    return render_template('model_management.html', selection_form=selection_form, save_form=save_form)
+    if reference_form.validate_on_submit():
+        selected_reference_file = reference_form.reference_file.data
+        file_path = os.path.join(current_app.config['REFERENCE_DATA_DIR'], selected_reference_file)
+        table_html = file_manager_instance.view_csv_contents(file_path)
+        # return render_template('model_management.html', reference_form=reference_form, table_html=table_html)
+
+    return render_template('model_management.html', selection_form=selection_form, save_form=save_form,
+                           reference_form=reference_form, table_html=table_html)
 
 
 @model_manager_bp.route('/save-model', methods=['POST'])
@@ -82,10 +63,11 @@ def save_model():
             flash('No model selected to save.', 'error')
             return redirect(url_for('model_manager.model_manager'))
 
-        try:
-            save_message = model_management.save_model_with_custom_name(chosen_model, custom_name)
+        model_mgr = ModelManager()
+        save_message = model_mgr.save_model_with_custom_name(chosen_model, custom_name)
+        if 'Error saving model' in save_message:
+            flash(save_message, 'error')
+        else:
             flash(save_message, 'success')
-        except Exception as e:
-            flash(f'Error saving model: {str(e)}', 'error')
 
     return redirect(url_for('model_manager.model_manager'))

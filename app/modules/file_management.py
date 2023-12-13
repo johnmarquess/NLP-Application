@@ -24,13 +24,14 @@ class FileManagement:
             'raw': current_app.config['RAW_DATA_DIR'],
             'clean': current_app.config['CLEAN_DATA_DIR'],
             'processed': current_app.config['PROCESSED_DATA_DIR'],
-            'labelled': current_app.config['LABELLED_DATA_DIR']
+            'labelled': current_app.config['LABELLED_DATA_DIR'],
+            'reference': current_app.config['REFERENCE_DATA_DIR']
         }
         return directory_mapping.get(directory_type)
 
     def list_files(self, directory):
         # Check if the directory is a type like 'raw' or 'clean'
-        if directory in ['raw', 'clean', 'processed']:
+        if directory in ['raw', 'clean', 'processed', 'reference', 'labelled']:
             directory = self._get_directory(directory)
 
         # Now proceed with the full directory path
