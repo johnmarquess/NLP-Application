@@ -77,31 +77,4 @@ def save_model():
     return redirect(url_for('model_manager.model_manager'))
 
 
-@model_manager_bp.route('/update_model_with_reference_file', methods=['POST'])
-def update_model_with_reference_file():
-    selected_reference_file = request.form.get('selected_reference_file')
 
-    if not selected_reference_file:
-        flash('No reference file selected.', 'error')
-        return redirect(url_for('model_manager.model_manager'))
-
-    model_name = session.get('spacy_model_name') or session.get('custom_model_name')
-    if not model_name:
-        flash('No model loaded to update.', 'error')
-        return redirect(url_for('model_manager.model_manager'))
-
-    # Path to the reference file in the reference data directory
-    reference_file_path = os.path.join(current_app.config['REFERENCE_DATA_DIR'], selected_reference_file)
-
-    # Update the model with entities from the reference file
-    try:
-        model_mgr = ModelManager(model_name)
-        before_count, after_count = model_mgr.update_model_with_entities(reference_file_path)
-        flash(f"Model updated successfully with entities from {selected_reference_file}", 'success')
-    except Exception as e:
-        flash(f'Error updating model with reference file: {str(e)}', 'error')
-        return redirect(url_for('model_manager.model_manager'))
-
-    return redirect(url_for('model_manager.model_manager',
-                            before_count=before_count,
-                            after_count=after_count))

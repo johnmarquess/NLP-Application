@@ -58,12 +58,7 @@
             {{ table_html|safe }}
         </div>
 
-        <!-- Form for updating the model with the selected reference file -->
-        <form method="post" action="{{ url_for('model_manager.update_model_with_reference_file') }}">
-            <input type="hidden" name="selected_reference_file" value="{{ selected_reference_file }}">
-            <input type="submit" value="Update Model with Selected Reference File" class="btn btn-primary mt-2"
-                    {% if not model_loaded %} disabled {% endif %}>
-        </form>
+
 
         <!-- Displaying entity counts -->
         {% if before_count and after_count %}
