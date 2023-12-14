@@ -48,43 +48,4 @@ class ModelManager:
         except Exception as e:
             return f"Error saving model: {str(e)}"
 
-    def update_model_with_entities(self, reference_file_path):
-        if not self.nlp:
-            raise ValueError("No model loaded to update")
 
-        # Count entities before update
-        before_count = len(self.nlp.pipe_labels.get("ner", []))
-
-        # Read the reference file
-        df = pd.read_csv(reference_file_path)
-        patterns = df.values.tolist()
-
-        # Update the model
-        ruler = self.nlp.add_pipe("entity_ruler", before="ner")
-        ruler.add_patterns([{"label": label, "pattern": pattern} for pattern, label in patterns])
-
-        # Add phrase matcher component if multi-word entities are present
-        multi_word_patterns = [pattern for pattern, label in patterns if len(pattern.split()) > 1]
-        if multi_word_patterns:
-            phrase_matcher = PhraseMatcher(self.nlp.vocab)
-            for pattern in multi_word_patterns:
-                phrase_matcher.add("CUSTOM_ENTITY", [self.nlp.make_doc(pattern)])
-            self.nlp.add_pipe(self.phrase_matcher_component(phrase_matcher), before="entity_ruler")
-
-        # Count entities after update
-        after_count = len(self.nlp.pipe_labels.get("ner", []))
-
-        return before_count, after_count
-
-    @staticmethod
-    def phrase_matcher_component(phrase_matcher):
-        def custom_component(doc):
-            matches = phrase_matcher(doc)
-            spans = []
-            for match_id, start, end in matches:
-                span = Span(doc, start, end, label="CUSTOM_ENTITY")
-                spans.append(span)
-            doc.ents = list(doc.ents) + spans
-            return doc
-
-        return custom_component
