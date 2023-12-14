@@ -20,10 +20,6 @@
                 {{ selection_form.custom_model(class="form-select") }}
             </div>
 
-            <div id="huggingface-model-selection" style="display: none;">
-                {{ selection_form.huggingface_model.label }}<br>
-                {{ selection_form.huggingface_model(class="form-control") }}
-            </div>
             {{ selection_form.submit(class="btn btn-outline-primary btn-sm mt-lg-2") }}
         </form>
 
@@ -56,6 +52,13 @@
     </div>
 
 
+    {% if update_message %}
+        <div class="alert alert-info" role="alert">
+            {{ update_message }}
+        </div>
+    {% endif %}
+
+    <!-- Display table_html if available -->
     {% if table_html %}
         <div class="mt-4">
             <h3>Reference File Contents</h3>
@@ -63,17 +66,18 @@
         </div>
     {% endif %}
 
+
+
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let modelTypeSelect = document.getElementById('model_type');
             let spacyModelSelectionDiv = document.getElementById('spacy-model-selection');
             let customModelSelectionDiv = document.getElementById('custom-model-selection');
-            let huggingfaceModelSelectionDiv = document.getElementById('huggingface-model-selection');
 
             function updateModelSelection() {
                 spacyModelSelectionDiv.style.display = modelTypeSelect.value === 'spacy_core' ? 'block' : 'none';
                 customModelSelectionDiv.style.display = modelTypeSelect.value === 'custom' ? 'block' : 'none';
-                huggingfaceModelSelectionDiv.style.display = modelTypeSelect.value === 'huggingface' ? 'block' : 'none';
             }
 
             modelTypeSelect.addEventListener('change', updateModelSelection);
