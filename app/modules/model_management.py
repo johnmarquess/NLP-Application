@@ -3,8 +3,7 @@ import os
 import pandas as pd
 import spacy
 from flask import current_app, session
-from spacy.matcher import PhraseMatcher
-from spacy.tokens import Span
+from spacy.pipeline import EntityRuler
 
 
 class ModelManager:
@@ -28,7 +27,6 @@ class ModelManager:
                 session['custom_model_name'] = model_identifier
                 return f"Custom model {model_identifier} loaded successfully", nlp
 
-
         except Exception as e:
             return f"Error loading model: {str(e)}", None
 
@@ -48,4 +46,32 @@ class ModelManager:
         except Exception as e:
             return f"Error saving model: {str(e)}"
 
+    def add_entities_from_csv(self, file_path):
+        try:
+            df = pd.read_csv(file_path)
+            if 'input' not in df.columns or 'entity' not in df.columns:
+                return "CSV file must contain 'input' and 'entity' columns"
 
+            entities = [(row['input'], row['entity']) for index, row in df.iterrows()]
+
+            model_type = 'spacy_core'  # or 'custom'
+            model_identifier = session.get('spacy_model_name') or session.get('custom_model_name')
+
+            load_message, nlp = self.load_model(model_type, model_identifier)
+            if nlp is None:
+                return load_message
+
+            # Create a new EntityRuler and add patterns
+            ruler = EntityRuler(nlp, overwrite_ents=True)
+            patterns = [{"label": ent_type, "pattern": ent_name} for ent_name, ent_type in entities]
+            ruler.add_patterns(patterns)
+
+            # Add the EntityRuler to the pipeline
+            nlp.add_pipe('entity_ruler', before="ner")
+            nlp.get_pipe('entity_ruler').add_patterns(patterns)
+
+            formatted_entities = ["{} ({})".format(pattern['pattern'], pattern['label']) for pattern in patterns]
+            return "Entities added: " + ", ".join(formatted_entities)
+
+        except Exception as e:
+            return f"Error processing file: {str(e)}"
