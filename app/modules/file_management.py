@@ -221,3 +221,19 @@ class FileManagement:
             return f'File saved successfully: {file_path}'
         except Exception as e:
             return f'An error occurred: {str(e)}'
+
+    @staticmethod
+    def save_as_txt(df, filename, directory_type, encoding='utf-8'):
+        try:
+            dir_path = current_app.config.get(directory_type)
+            if dir_path is None:
+                return f"Error: Directory type '{directory_type}' resolved to None."
+
+            if not os.path.exists(dir_path):
+                os.makedirs(dir_path)
+
+            file_path = os.path.join(dir_path, filename)
+            df.to_csv(file_path, index=False, sep='\t', encoding=encoding)  # Saving as tab-separated values
+            return f'File saved successfully: {file_path}'
+        except Exception as e:
+            return f'An error occurred: {str(e)}'
