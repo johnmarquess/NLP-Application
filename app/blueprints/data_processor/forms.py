@@ -22,8 +22,10 @@ class DataProcessingForm(FlaskForm):
     column_to_preprocess = SelectField('Choose column to preprocess', choices=[], validators=[DataRequired()])
     # Options for storing the preprocessed data
     store_as = SelectField('Store As', choices=[('string', 'String'), ('tokens', 'List of Tokens')])
-    submit = SubmitField('Process')
+
     output_filename = StringField('Output Filename', validators=[DataRequired()])
+    file_format = SelectField('File Format', choices=[('csv', 'CSV'), ('txt', 'TXT')])
+    submit = SubmitField('Process')
 
     # def __init__(self, *args, **kwargs):
     #     super(DataProcessingForm, self).__init__(*args, **kwargs)
