@@ -26,8 +26,9 @@ def data_processing():
             preprocess_form.populate_column_choices(file_path)
 
         if 'process_submit' in request.form:
-            if preprocess_form.validate():
-                print("Form validation successful")
+            if preprocess_form.validate_on_submit():
+                output_file = preprocess_form.output_filename.data
+                file_format = preprocess_form.file_format.data
 
                 try:
                     df = pd.read_csv(file_path)
@@ -69,21 +70,26 @@ def data_processing():
                     if preprocess_form[opt].data
                 )
 
-                if preprocess_form.output_filename.data:
-                    output_file = preprocess_form.output_filename.data
-                    if not output_file.lower().endswith('.csv'):
-                        output_file += '.csv'
+                # Ensure the file has the correct extension
+                if file_format == 'csv' and not output_file.lower().endswith('.csv'):
+                    output_file += '.csv'
+                elif file_format == 'txt' and not output_file.lower().endswith('.txt'):
+                    output_file += '.txt'
 
-                    output_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], output_file)
+                output_path = os.path.join(current_app.config['PROCESSED_DATA_DIR'], output_file)
 
-                    if os.path.exists(output_path):
-                        flash(f'File {output_file} already exists. Please choose a different name.', 'warning')
-                    else:
-                        try:
+                if os.path.exists(output_path):
+                    flash(f'File {output_file} already exists. Please choose a different name.', 'warning')
+                else:
+                    try:
+                        if file_format == 'csv':
                             save_message = file_manager.save_as_csv(df, output_file, 'PROCESSED_DATA_DIR')
+                        elif file_format == 'txt':
+                            save_message = file_manager.save_as_txt(df, output_file, 'PROCESSED_DATA_DIR')
+
                             flash(save_message, 'success')
-                        except Exception as e:
-                            flash(f'Failed to save file: {e}', 'error')
+                    except Exception as e:
+                        flash(f'Failed to save file: {e}', 'error')
 
             else:
                 print("Form validation failed")

@@ -13,7 +13,8 @@
             <p>After you have selected the model and the options, click the <strong>Process Data</strong> button to
                 pre-process the data</p>
             <form action="{{ url_for('data_processor.data_processing') }}" method="post">
-                <span id="columns-url" style="display:none;" data-url="{{ url_for('data_processor.get_columns', filename='') }}"></span>
+                <span id="columns-url" style="display:none;"
+                      data-url="{{ url_for('data_processor.get_columns', filename='') }}"></span>
 
                 {{ preprocess_form.hidden_tag() }}
                 <div class="mb-3">
@@ -65,12 +66,25 @@
                     <label for="store-as" class="form-label">Store As</label>
                     {{ preprocess_form.store_as(class="form-select", id="store-as") }}
                 </div>
+                {#                <div class="mb-3">#}
+                {#                    {{ preprocess_form.output_filename(class="form-control", placeholder="Output filename") }}#}
+                {#                </div>#}
+                {##}
+                {#                    <input type="submit" name="process_submit" value="Process Data"#}
+                {#                           class="btn btn-outline-primary btn-sm">#}
+
                 <div class="mb-3">
+                    {{ preprocess_form.file_format.label }}
+                    {{ preprocess_form.file_format(class="form-select") }}
+                </div>
+                <div class="mb-3">
+                    {{ preprocess_form.output_filename.label }}
                     {{ preprocess_form.output_filename(class="form-control", placeholder="Output filename") }}
                 </div>
-
+                <div>
                     <input type="submit" name="process_submit" value="Process Data"
                            class="btn btn-outline-primary btn-sm">
+                </div>
 
             </form>
         </div>
