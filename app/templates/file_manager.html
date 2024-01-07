@@ -80,11 +80,12 @@
 
         <div class="col-md-6">
             <h3 class="mb-lg-1 mt-lg-4">CSV files in data/clean</h3>
+            <p>[Number] = number of columns in file</p>
             <form action="{{ url_for('file_manager.file_manager') }}" method="post">
-                {% for file in clean_files %}
+                {% for file, column_count in clean_files_with_columns %}
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="file_choice" value="{{ file }}">
-                        <label class="form-check-label">{{ file }}</label>
+                        <label class="form-check-label">{{ file }} [{{ column_count }}]</label>
                     </div>
                 {% endfor %}
                 <button type="submit" class="btn btn-outline-primary btn-sm">View File</button>

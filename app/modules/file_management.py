@@ -39,6 +39,25 @@ class FileManagement:
             return []
         return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
+    def list_files_with_columns(self, directory):
+        directory_path = self._get_directory(directory)
+        if not os.path.exists(directory_path):
+            return []
+
+        files_with_columns = []
+        for file in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, file)
+            if os.path.isfile(file_path) and file.endswith('.csv'):
+                try:
+                    # Read only the first row to get the columns
+                    df = pd.read_csv(file_path, nrows=1)
+                    column_count = len(df.columns)
+                    files_with_columns.append((file, column_count))
+                except Exception as e:
+                    # Handle exceptions or log errors as needed
+                    files_with_columns.append((file, 'Error'))
+        return files_with_columns
+
     def upload_file(self, file, directory_type='raw'):
         if not file:
             return 'No file provided'

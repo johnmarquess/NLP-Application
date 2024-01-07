@@ -35,6 +35,7 @@ def file_manager():
     raw_files = file_manager_instance.list_files('raw')
     spreadsheet_files = [f for f in raw_files if f.endswith(('.xls', '.xlsx'))]
     spreadsheet_form.file_choice.choices = [(f, f) for f in spreadsheet_files]
+    clean_files_with_columns = file_manager_instance.list_files_with_columns('clean')
 
     # Handle file upload
     if 'upload' in request.form:
@@ -69,6 +70,7 @@ def file_manager():
 
     return render_template('file_manager.html',
                            upload_form=upload_form, raw_files=raw_files, clean_files=clean_files,
+                           clean_files_with_columns=clean_files_with_columns,
                            table_html=table_html, spreadsheet_form=spreadsheet_form)
 
 
