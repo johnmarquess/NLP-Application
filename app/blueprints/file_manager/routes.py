@@ -41,6 +41,15 @@ def file_manager():
     if 'upload' in request.form:
         handle_file_upload(upload_form, file_manager_instance)
 
+    # Check if the filter action button was pressed
+    if 'filter_action' in request.form:
+        selected_file = request.form.get('file_choice')
+        if selected_file:
+            # Redirect to initiate filtering with the selected file
+            return redirect(url_for('file_manager.initiate_filtering', file_name=selected_file))
+        else:
+            flash("No file selected for filtering.", "warning")
+
     if 'select_spreadsheet' in request.form:
         selected_file = spreadsheet_form.file_choice.data
         if selected_file:
@@ -171,4 +180,66 @@ def delete_file(file_type):
         flash(f'File {file_name} deleted successfully.', 'success')
     else:
         flash(f'Failed to delete {file_name}.', 'danger')
+    return redirect(url_for('file_manager.file_manager'))
+
+
+@file_manager_bp.route('/initiate-filtering/<file_name>', methods=['GET'])
+def initiate_filtering(file_name):
+    file_path = os.path.join(current_app.config['CLEAN_DATA_DIR'], file_name)
+    df = pd.read_csv(file_path)
+
+    # Extract column names for the user to choose which one to filter by
+    columns = df.columns.tolist()
+
+    # Render a template passing the columns and the file name
+    return render_template('initiate_filtering.html', columns=columns, file_name=file_name)
+
+
+@file_manager_bp.route('/perform-filtering/<file_name>', methods=['POST'])
+def perform_filtering(file_name):
+    filter_column = request.form.get('filter_column')
+    file_path = os.path.join(current_app.config['CLEAN_DATA_DIR'], file_name)
+    df = pd.read_csv(file_path)
+
+    if filter_column not in df:
+        flash('Invalid column selected', 'danger')
+        return redirect(url_for('file_manager.file_manager'))
+
+    # Get unique values for the selected column
+    unique_values = df[filter_column].dropna().unique().tolist()
+
+    # Render a template to show filtering options and save options
+    return render_template('perform_filtering.html', unique_values=unique_values, file_name=file_name,
+                           filter_column=filter_column)
+
+
+@file_manager_bp.route('/save-filtered-data/<file_name>', methods=['POST'])
+def save_filtered_data(file_name):
+    filter_column = request.form.get('filter_column')
+    filter_value = request.form.get('filter_value')
+    save_format = request.form.get('save_format')
+
+    file_path = os.path.join(current_app.config['CLEAN_DATA_DIR'], file_name)
+    df = pd.read_csv(file_path)
+    filtered_df = df[df[filter_column] == filter_value]
+
+    # Replace NAs with "Unknown"
+    filtered_df.fillna("Unknown", inplace=True)
+
+    # Choose the saving method based on the selected format
+    save_method = FileManagement.save_as_txt if save_format == 'txt' else FileManagement.save_as_csv
+
+    # Get custom file name from the form, use default if not provided
+    custom_file_name = request.form.get('custom_filename')
+    if not custom_file_name or custom_file_name.strip() == '':
+        new_file_name = f"filtered_{os.path.splitext(file_name)[0]}"
+    else:
+        new_file_name = custom_file_name.strip()
+
+    # Append the appropriate file extension
+    new_file_name += f".{save_format}"
+
+    # Save the filtered data
+    save_message = save_method(filtered_df, new_file_name, 'CLEAN_DATA_DIR')
+    flash(save_message, 'success')
     return redirect(url_for('file_manager.file_manager'))

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <form action="{{ url_for('file_manager.save_filtered_data', file_name=file_name) }}" method="post">
+        <div class="form-group">
+            <label for="filter_value">Select Value to Filter By:</label>
+            <select name="filter_value" id="filter_value" class="form-control" required>
+                {% for value in unique_values %}
+                    <option value="{{ value }}">{{ value }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="custom_filename">Custom Filename (optional):</label>
+            <input type="text" name="custom_filename" id="custom_filename" class="form-control" placeholder="Enter custom filename">
+        </div>
+
+        <div class="form-group">
+            <label for="save_format">Select Save Format:</label>
+            <select name="save_format" id="save_format" class="form-control" required>
+                <option value="csv">CSV</option>
+                <option value="txt">Text (TXT)</option>
+            </select>
+        </div>
+        <input type="hidden" name="filter_column" value="{{ filter_column }}">
+        <button type="submit" class="btn btn-primary">Filter and Save</button>
+    </form>
+{% endblock %}
