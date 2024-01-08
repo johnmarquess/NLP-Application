@@ -3,7 +3,7 @@
 {% block content %}
     <form action="{{ url_for('file_manager.perform_filtering', file_name=file_name) }}" method="post">
         <div class="form-group">
-            <label for="filter_column">Select Column to Filter:</label>
+            <label for="filter_column">Select Column to use as filter:</label>
             <select name="filter_column" id="filter_column" class="form-control" required>
                 {% for col in columns %}
                     <option value="{{ col }}">{{ col }}</option>
